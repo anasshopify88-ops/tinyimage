@@ -15,7 +15,6 @@
     --radius:16px; --radius-sm:12px;
     --sidebar-w:280px;
     --fs-base:13px; --fs-sm:11.5px;
-    --stack-gap:14px;
   }
 
   *{box-sizing:border-box}
@@ -52,46 +51,39 @@
   .logo{width:100%; max-width:180px; align-self:center; object-fit:contain; object-position:center; background:#fff; border-radius:12px; border:1px solid var(--border); padding:8px}
   .title-logo{width:180px; max-width:180px; align-self:center}
 
-  /* ========= Layout: سايدبار يمين + محتوى يسار (رفع فوق + نتائج تحت) ========= */
+  /* ======================
+     ✅ LAYOUT (مهم)
+     في RTL: العمود الأول يظهر على اليمين
+     ====================== */
   .layout{
     display:grid;
-    grid-template-columns: var(--sidebar-w) minmax(0,1fr);
-    grid-template-areas: "side main";
-    gap:var(--stack-gap);
-    align-items:start;
+    grid-template-columns: var(--sidebar-w) minmax(0,1fr) minmax(0,1fr);
+    grid-template-areas: "side uploads results";
+    gap:14px;
+    align-items:stretch; /* ✅ كل البطاقات نفس الارتفاع */
     margin-top:12px;
   }
+
+  /* ربط المناطق */
   #sidePanel{grid-area:side}
-  #mainCol{grid-area:main}
+  #uploadsCard{grid-area:uploads}
+  #resultsCard{grid-area:results}
 
-  #mainCol{
+  /* ✅ لا قص داخل السايدبار، خله يتمدد ويظهر كامل المحتوى */
+  #sidePanel{
     display:flex;
-    flex-direction:column;
-    gap:var(--stack-gap);
-    min-width:0;
+    overflow:visible;
   }
-
-  /* ===== Sidebar ===== */
-  #sidePanel{display:block; overflow:visible;}
   .sidebar-card{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    overflow:hidden;  /* ✅ نخلي السكرول للجزء السفلي فقط */
+    flex:1 1 auto;
+    display:flex; flex-direction:column; gap:10px;
+    height:100%;          /* ✅ يساوي ارتفاع صف الـGrid */
+    overflow:visible;     /* ✅ بدون سكرول داخلي */
     min-height:0;
   }
 
   .avatar{width:112px;height:112px;border-radius:50%;background:#fff;padding:6px;object-fit:contain;object-position:center;border:1px solid var(--border);align-self:center}
-
-  /* القائمة لازم تكون Flex عشان toolsScroll يأخذ الباقي ويسكرول */
-  .s-list{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    min-height:0;
-    flex:1;          /* ✅ ياخذ المساحة المتبقية */
-  }
-
+  .s-list{display:grid; gap:8px}
   .s-item a{
     display:block; padding:8px 10px; border:1px solid var(--border); border-radius:12px; background:#fff;
     color:#0f172a; text-decoration:none; font-weight:600; transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
@@ -103,20 +95,10 @@
     color:#0f172a; font-weight:600; box-shadow:0 4px 12px rgba(15,23,42,.05); font-size:13px;
   }
 
-  /* ✅ الجزء اللي تحت "أدوات سيو احترافية" يصير Scroll */
-  .sb-scroll{
-    margin-top:2px;
-    display:grid;
-    gap:8px;
-    overflow:auto;   /* ✅ سكرول هنا */
-    min-height:0;
-    padding-bottom:4px;
-    flex:1;          /* ✅ يملأ الباقي داخل السايدبار */
-  }
-
-  /* ===== Cards ===== */
-  .card.section{padding:16px; min-width:0;}
-
+  /* Tool cards */
+  .card.section{padding:16px; height:100%; min-height:0;} /* ✅ يساوي ارتفاع صف الـGrid */
+  .field{margin-bottom:14px}
+  .field:last-child{ margin-bottom: 0 }
   .label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:14px}
   .hint{font-size:12px;color:var(--muted)}
 
@@ -134,14 +116,6 @@
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;color:var(--muted);font-weight:800}
 
-  /* Upload card */
-  #uploadsCard{display:flex; flex-direction:column; min-height:0;}
-  #uploadsInner{flex:1; min-height:0; overflow:auto; padding-bottom:2px;}
-
-  /* Results card */
-  #resultsCard{display:flex; flex-direction:column; min-height:0;}
-  #outList{flex:1; min-height:0; overflow:auto; padding-left:2px; padding-right:2px;}
-
   /* Upload drop */
   .drop{
     border:1.5px dashed #cbd5e1;
@@ -158,7 +132,7 @@
   .drop strong{font-size:13px}
   .drop .mini{font-size:12px;color:var(--muted)}
 
-  /* Results list items */
+  /* Results list */
   .list{display:grid; gap:10px}
   .item{
     border:1px solid var(--border); border-radius:14px; background:#fff;
@@ -190,16 +164,19 @@
     .layout{
       grid-template-columns: 1fr;
       grid-template-areas:
-        "main"
+        "uploads"
+        "results"
         "side";
-      align-items:start;
+      align-items:stretch;
     }
     .avatar{width:104px;height:104px}
-    .sidebar-card{overflow:visible;}
-    .sb-scroll{overflow:visible;}
-    #uploadsInner{overflow:visible;}
-    #outList{overflow:visible;}
+    .card.section{height:auto}
+    .sidebar-card{height:auto}
+    #sidePanel{display:block}
   }
+
+  /* إخفاء "وضع API" */
+  #modeInfo{display:none !important;}
 </style>
 </head>
 
@@ -225,13 +202,14 @@
     </div>
 
     <div class="layout">
+
       <!-- السايدبار (يمين) -->
       <aside id="sidePanel">
-        <div class="card sidebar-card" id="sidebarCard">
+        <div class="card sidebar-card">
           <img class="avatar" src="https://i.imgur.com/B3UkEQ0.jpg" alt="صورتي" referrerpolicy="no-referrer"
                onerror="this.onerror=null; this.src='https://i.imgur.com/B3UkEQ0.png';">
 
-          <div class="s-list" id="sidebarList">
+          <div class="s-list">
             <div class="s-item"><a href="https://whoami.anasrashed.com" target="_blank" rel="noopener">من أنا؟</a></div>
 
             <div class="s-item">
@@ -250,78 +228,74 @@
 
             <div class="s-item"><span class="s-text">تحسين داخلي</span></div>
             <div class="s-item"><span class="s-text">تحسين خارجي</span></div>
-
-            <!-- ✅ الهدف الأول للمحاذاة -->
-            <div class="s-item"><span class="s-text" id="svcCompetitors">استخراج الكلمات المفتاحية للمنافسين</span></div>
-
+            <div class="s-item"><span class="s-text">استخراج الكلمات المفتاحية للمنافسين</span></div>
             <div class="s-item"><span class="s-text">تفعيل خريطة الموقع للباقة بلس</span></div>
 
-            <!-- ✅ الهدف الثاني للمحاذاة -->
-            <div class="sub" id="toolsHeading" style="text-align:center; font-size:18px; margin-top:10px;">
+            <div class="sub" style="text-align:center; font-size:18px; margin-top:10px;">
               <b>أدوات سيو احترافية</b>
             </div>
 
-            <!-- ✅ هذا الجزء فقط يسكرول -->
-            <div class="sb-scroll" id="toolsScroll">
-              <div class="s-item"><a href="https://serp.anasrashed.com" target="_blank" rel="noopener">أداة SERP بالذكاء الإصطناعي</a></div>
-              <div class="s-item"><a href="https://writer.anasrashed.com" target="_blank" rel="noopener">أداة كتابة المقالات بالذكاء الإصطناعي</a></div>
-              <div class="s-item"><a href="https://smg.anasrashed.com" target="_blank" rel="noopener">أداة منشئ خريطة الموقع</a></div>
-              <div class="s-item"><a href="https://keywords.anasrashed.com" target="_blank" rel="noopener">أداة الكلمات المفتاحية</a></div>
-              <div class="s-item"><a href="https://checker.anasrashed.com" target="_blank" rel="noopener">أداة فحص الموقع</a></div>
-            </div>
-
+            <div class="s-item"><a href="https://serp.anasrashed.com" target="_blank" rel="noopener">أداة SERP بالذكاء الإصطناعي</a></div>
+            <div class="s-item"><a href="https://writer.anasrashed.com" target="_blank" rel="noopener">أداة كتابة المقالات بالذكاء الإصطناعي</a></div>
+            <div class="s-item"><a href="https://smg.anasrashed.com" target="_blank" rel="noopener">أداة منشئ خريطة الموقع</a></div>
+            <div class="s-item"><a href="https://keywords.anasrashed.com" target="_blank" rel="noopener">أداة الكلمات المفتاحية</a></div>
+            <div class="s-item"><a href="https://checker.anasrashed.com" target="_blank" rel="noopener">أداة فحص الموقع</a></div>
           </div>
         </div>
       </aside>
 
-      <!-- العمود الرئيسي -->
-      <div id="mainCol">
+      <!-- رفع الصور (وسط) -->
+      <section class="card section" id="uploadsCard">
+        <div class="label">رفع الصور</div>
 
-        <!-- رفع الصور -->
-        <section class="card section" id="uploadsCard">
-          <div class="label">رفع الصور</div>
-
-          <div id="uploadsInner">
-            <div class="drop" id="dropZone">
-              <div>
-                <strong>اسحب الصور هنا</strong>
-                <div class="mini">أو اضغط "اختيار ملفات" (يدعم: JPG / PNG / GIF / BMP / WebP).</div>
-              </div>
-              <div class="btns" style="margin:0">
-                <button class="primary" id="pickBtn" type="button">اختيار ملفات</button>
-              </div>
-            </div>
-
-            <input id="fileInput" type="file" accept="image/*" multiple hidden>
-
-            <div class="chips">
-              <span class="chip" id="countChip">0 ملفات</span>
-            </div>
-
-            <div class="btns" style="margin-top:12px">
-              <button class="primary" id="convertBtn" disabled>تحويل إلى WebP</button>
-              <button id="zipBtn" disabled>تحميل الكل (ZIP)</button>
-              <button class="danger" id="clearBtn">مسح</button>
-            </div>
-
-            <div id="status" class="status hidden"></div>
-            <div id="err" class="err" hidden></div>
+        <div class="drop" id="dropZone">
+          <div>
+            <strong>اسحب الصور هنا</strong>
+            <div class="mini">أو اضغط "اختيار ملفات" (يدعم: JPG / PNG / GIF / BMP / WebP).</div>
           </div>
-        </section>
-
-        <!-- النتائج -->
-        <section class="card section" id="resultsCard">
-          <div class="label">
-            <span>النتائج</span>
-            <span class="hint" id="summaryHint">—</span>
+          <div class="btns" style="margin:0">
+            <button class="primary" id="pickBtn" type="button">اختيار ملفات</button>
           </div>
+        </div>
 
-          <div id="outList" class="list">
-            <div class="hint">هنا تظهر الصور بعد التحويل</div>
-          </div>
-        </section>
+        <input id="fileInput" type="file" accept="image/*" multiple hidden>
 
-      </div>
+        <div class="hint" style="margin-top:10px">
+          ✅ الجودة ثابتة 100% دائمًا. الأداة تحاول تعطيك <b>أكبر توفير ممكن</b> عبر تجربة Lossless و Lossy-100 واختيار الأصغر تلقائيًا.
+        </div>
+
+        <div class="chips">
+          <span class="chip" id="qualityChip">Quality: 100%</span>
+          <span class="chip" id="engineChip">Engine: wasm-webp (libwebp)</span>
+          <span class="chip" id="countChip">0 ملفات</span>
+        </div>
+
+        <div class="btns" style="margin-top:12px">
+          <button class="primary" id="convertBtn" disabled>تحويل إلى WebP</button>
+          <button id="zipBtn" disabled>تحميل الكل (ZIP)</button>
+          <button class="danger" id="clearBtn">مسح</button>
+        </div>
+
+        <div id="status" class="status hidden"></div>
+        <div id="err" class="err" hidden></div>
+
+        <div class="hint" style="margin-top:12px">
+          الخصوصية: يتم التحويل بالكامل داخل جهازك (بدون رفع أي ملفات).
+        </div>
+      </section>
+
+      <!-- النتائج (يسار) -->
+      <section class="card section" id="resultsCard">
+        <div class="label">
+          <span>النتائج</span>
+          <span class="hint" id="summaryHint">—</span>
+        </div>
+
+        <div id="outList" class="list" style="margin-top:10px">
+          <div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>
+        </div>
+      </section>
+
     </div>
   </div>
 
@@ -329,7 +303,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script type="module">
-  import { encode } from "https://cdn.jsdelivr.net/npm/wasm-webp@0.0.2/dist/esm/index.js";
+  import { encoderVersion, encode } from "https://cdn.jsdelivr.net/npm/wasm-webp@0.0.2/dist/esm/index.js";
 
   const $ = s => document.querySelector(s);
 
@@ -344,20 +318,13 @@
   const statusEl    = $('#status');
   const errEl       = $('#err');
   const countChip   = $('#countChip');
+  const engineChip  = $('#engineChip');
   const summaryHint = $('#summaryHint');
 
-  const uploadsCard = $('#uploadsCard');
-  const resultsCard = $('#resultsCard');
-  const mainCol     = $('#mainCol');
-  const sidebarCard = $('#sidebarCard');
-  const toolsScroll = $('#toolsScroll');
+  const QUALITY = 100; // ✅ ثابت دائمًا
 
-  const svcCompetitors = $('#svcCompetitors');
-  const toolsHeading   = $('#toolsHeading');
-
-  const QUALITY = 100;
   let queue = [];
-  let results = [];
+  let results = []; // {name,inSize,outSize,savedPct,blob,url,modeChosen,w,h,thumbUrl}
 
   $('#backBtn').addEventListener('click', ()=>history.back());
 
@@ -390,65 +357,6 @@
     }[m]));
   }
 
-  // =========================
-  // ✅ مزامنة الطول حسب عناصر السايدبار
-  // =========================
-  function clearInlineHeights(){
-    uploadsCard.style.height = '';
-    resultsCard.style.height = '';
-    sidebarCard.style.height = '';
-    toolsScroll.style.maxHeight = '';
-  }
-
-  function syncHeights(){
-    const isMobile = window.matchMedia('(max-width:980px)').matches;
-    if(isMobile){ clearInlineHeights(); return; }
-
-    if(!svcCompetitors || !toolsHeading) return;
-
-    // ✅ صفّر أولاً ثم قِس
-    clearInlineHeights();
-
-    // رفع الصور: يوازي "استخراج الكلمات المفتاحية للمنافسين"
-    const uploadsTop = uploadsCard.getBoundingClientRect().top;
-    const svcBottom  = svcCompetitors.getBoundingClientRect().bottom;
-
-    let uploadH = Math.round(svcBottom - uploadsTop);
-    uploadH = Math.max(uploadH, 360);
-
-    // النتائج: يوازي عنوان "أدوات سيو احترافية"
-    const resultsTop  = resultsCard.getBoundingClientRect().top;
-    const toolsBottom = toolsHeading.getBoundingClientRect().bottom;
-
-    let resultsH = Math.round(toolsBottom - resultsTop);
-    resultsH = Math.max(resultsH, 300);
-
-    uploadsCard.style.height = uploadH + 'px';
-    resultsCard.style.height = resultsH + 'px';
-
-    // السايدبار نفس ارتفاع العمود الرئيسي
-    const mainH = Math.round(mainCol.getBoundingClientRect().height);
-    sidebarCard.style.height = mainH + 'px';
-
-    toolsScroll.style.maxHeight = '100%';
-  }
-
-  let rafId = 0;
-  function scheduleSync(){
-    cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(syncHeights);
-  }
-
-  window.addEventListener('resize', scheduleSync);
-  window.addEventListener('load', scheduleSync);
-
-  try{
-    document.fonts?.ready?.then(()=>scheduleSync());
-  }catch(_){}
-
-  // =========================
-  // Tool Logic
-  // =========================
   function revokeAll(){
     for(const r of results){
       try{ URL.revokeObjectURL(r.url); }catch(e){}
@@ -460,7 +368,7 @@
     revokeAll();
     results = [];
     queue = [];
-    outList.innerHTML = '<div class="hint">هنا تظهر الصور بعد التحويل</div>';
+    outList.innerHTML = '<div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>';
     convertBtn.disabled = true;
     zipBtn.disabled = true;
     countChip.textContent = '0 ملفات';
@@ -468,7 +376,6 @@
     setStatus('', '');
     clearErr();
     fileInput.value = '';
-    scheduleSync();
   }
 
   clearBtn.addEventListener('click', resetAll);
@@ -487,12 +394,11 @@
     convertBtn.disabled = queue.length === 0;
 
     renderPending();
-    scheduleSync();
   }
 
   function renderPending(){
     if(!queue.length){
-      outList.innerHTML = '<div class="hint">هنا تظهر الصور بعد التحويل</div>';
+      outList.innerHTML = '<div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>';
       summaryHint.textContent = '—';
       return;
     }
@@ -618,7 +524,6 @@
     if(!results.length){
       outList.innerHTML = '<div class="hint">لا توجد نتائج بعد.</div>';
       summaryHint.textContent = '—';
-      scheduleSync();
       return;
     }
 
@@ -654,8 +559,6 @@
         </div>
       </div>
     `).join('');
-
-    scheduleSync();
   }
 
   async function convertAll(){
@@ -667,6 +570,13 @@
     setStatus('warn','جاري التحويل… لا تغلق الصفحة.');
 
     try{
+      try{
+        const ver = await encoderVersion();
+        engineChip.textContent = `Engine: wasm-webp (libwebp ${ver})`;
+      }catch(_){
+        engineChip.textContent = `Engine: wasm-webp (libwebp)`;
+      }
+
       outList.innerHTML = queue.map((f)=>`
         <div class="item">
           <div class="itemTop">
@@ -772,9 +682,7 @@
     }
   });
 
-  // init
   resetAll();
-  requestAnimationFrame(()=>syncHeights());
 </script>
 </body>
 </html>
