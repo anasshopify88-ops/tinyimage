@@ -51,19 +51,37 @@
   .logo{width:100%; max-width:180px; align-self:center; object-fit:contain; object-position:center; background:#fff; border-radius:12px; border:1px solid var(--border); padding:8px}
   .title-logo{width:180px; max-width:180px; align-self:center}
 
+  /* ======================
+     ✅ LAYOUT (مهم)
+     في RTL: العمود الأول يظهر على اليمين
+     ====================== */
   .layout{
     display:grid;
-    grid-template-columns: var(--sidebar-w) 1fr;
+    grid-template-columns: var(--sidebar-w) minmax(0,1fr) minmax(0,1fr);
+    grid-template-areas: "side uploads results";
     gap:14px;
-    align-items:stretch;
+    align-items:stretch; /* ✅ كل البطاقات نفس الارتفاع */
+    margin-top:12px;
   }
 
-  #sidePanel{display:flex; height:100%; min-height:0; overflow:hidden;}
-  @media (min-width:981px){ #sidePanel{ contain:size; } }
-  .sidebar-card{
-    flex:1 1 auto; height:100%;
-    display:flex; flex-direction:column; gap:10px; min-height:0; overflow:auto;
+  /* ربط المناطق */
+  #sidePanel{grid-area:side}
+  #uploadsCard{grid-area:uploads}
+  #resultsCard{grid-area:results}
+
+  /* ✅ لا قص داخل السايدبار، خله يتمدد ويظهر كامل المحتوى */
+  #sidePanel{
+    display:flex;
+    overflow:visible;
   }
+  .sidebar-card{
+    flex:1 1 auto;
+    display:flex; flex-direction:column; gap:10px;
+    height:100%;          /* ✅ يساوي ارتفاع صف الـGrid */
+    overflow:visible;     /* ✅ بدون سكرول داخلي */
+    min-height:0;
+  }
+
   .avatar{width:112px;height:112px;border-radius:50%;background:#fff;padding:6px;object-fit:contain;object-position:center;border:1px solid var(--border);align-self:center}
   .s-list{display:grid; gap:8px}
   .s-item a{
@@ -77,26 +95,11 @@
     color:#0f172a; font-weight:600; box-shadow:0 4px 12px rgba(15,23,42,.05); font-size:13px;
   }
 
-  #toolBox{display:block; min-height:0}
-  .row{
-    display:grid; gap:16px; align-items:stretch;
-    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-    grid-template-areas:"inputs outputs";
-    min-width:0;
-  }
-  @media (max-width:1024px){
-    .row{ grid-template-columns:1fr; grid-template-areas:"inputs" "outputs"; gap:12px; }
-  }
-
-  .card.section{padding:16px}
+  /* Tool cards */
+  .card.section{padding:16px; height:100%; min-height:0;} /* ✅ يساوي ارتفاع صف الـGrid */
   .field{margin-bottom:14px}
   .field:last-child{ margin-bottom: 0 }
-  .label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:700;font-size:14px}
-
-  input[type="text"], select, textarea{
-    width:100%;padding:14px;border:1px solid var(--border);border-radius:14px;background:#fff;color:var(--text)
-  }
-  textarea{min-height:160px;max-height:50vh;resize:vertical}
+  .label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:14px}
   .hint{font-size:12px;color:var(--muted)}
 
   .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
@@ -111,34 +114,34 @@
   .status.hidden{display:none}
   .err{margin-top:8px;font-size:12px;color:var(--error)}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;color:var(--muted)}
+  .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;color:var(--muted);font-weight:800}
 
-  @media (max-width:980px){
-    .layout{grid-template-columns:1fr}
-    #sidePanel{height:auto; overflow:visible;}
-    .avatar{width:104px;height:104px}
-  }
-
-  /* إخفاء "وضع API" */
-  #modeInfo{display:none !important;}
-
-  /* Tool extras */
+  /* Upload drop */
   .drop{
-    border:1.5px dashed #cbd5e1; border-radius:14px; padding:14px;
+    border:1.5px dashed #cbd5e1;
     background:linear-gradient(180deg,#fff,#f9fbff);
-    display:flex; gap:10px; align-items:center; justify-content:space-between;
+    border-radius:14px;
+    padding:14px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    justify-content:space-between;
+    transition:transform .18s ease, box-shadow .25s ease, border-color .25s ease;
   }
+  .drop.drag{border-color:var(--accent); box-shadow:0 0 0 4px rgba(37,99,235,.12)}
   .drop strong{font-size:13px}
   .drop .mini{font-size:12px;color:var(--muted)}
-  .drop.drag{border-color:var(--accent); box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-  .list{display:grid; gap:10px; margin-top:12px}
+
+  /* Results list */
+  .list{display:grid; gap:10px}
   .item{
     border:1px solid var(--border); border-radius:14px; background:#fff;
     padding:10px; display:grid; gap:10px;
+    box-shadow:0 4px 12px rgba(15,23,42,.05);
   }
   .itemTop{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
-  .name{font-weight:800}
-  .meta{color:var(--muted); font-size:12px}
+  .name{font-weight:900}
+  .meta{color:var(--muted); font-size:12px; font-weight:800}
   .grid2{display:grid; grid-template-columns: 84px 1fr; gap:10px; align-items:center}
   .thumb{
     width:84px; height:84px; border-radius:12px; border:1px solid var(--border);
@@ -146,14 +149,34 @@
   }
   .bar{height:10px; border-radius:999px; background:#eef2ff; border:1px solid var(--border); overflow:hidden}
   .bar > i{display:block; height:100%; width:0%}
-  .kpis{display:flex; flex-wrap:wrap; gap:8px}
-  .kpis .chip{color:#0f172a}
+  .kpis{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
   .smallLink{
     border:1px solid var(--border); background:#fff; border-radius:12px; padding:8px 10px;
-    text-decoration:none; font-weight:800; font-size:12px; display:inline-flex; gap:6px; align-items:center;
+    text-decoration:none; font-weight:900; font-size:12px; display:inline-flex; gap:6px; align-items:center;
     box-shadow:0 4px 12px rgba(15,23,42,.05); color:#0f172a;
+    transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
   }
-  .smallLink:hover{transform:translateY(-1px)}
+  .smallLink:hover{transform:translateY(-2px); border-color:#cbd5e1; box-shadow:0 8px 18px rgba(15,23,42,.08)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--error)}
+
+  /* Mobile */
+  @media (max-width:980px){
+    .layout{
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "uploads"
+        "results"
+        "side";
+      align-items:stretch;
+    }
+    .avatar{width:104px;height:104px}
+    .card.section{height:auto}
+    .sidebar-card{height:auto}
+    #sidePanel{display:block}
+  }
+
+  /* إخفاء "وضع API" */
+  #modeInfo{display:none !important;}
 </style>
 </head>
 
@@ -170,7 +193,7 @@
         <div>
           <h1>أداة تحويل الصور إلى WebP (جودة 100%)</h1>
           <div class="sub">
-            تحويل محلي 100% داخل المتصفح — بدون رفع ملفات. الجودة ثابتة 100%، والأداة تختار تلقائيًا أصغر نتيجة بين (Lossless) و (Lossy بجودة 100).
+            تحويل محلي 100% داخل المتصفح — بدون رفع ملفات. الجودة ثابتة 100%، والأداة تختار تلقائيًا أصغر نتيجة بين (Lossless) و (Lossy 100%).
           </div>
         </div>
         <img class="logo title-logo" src="https://i.imgur.com/meUEoP7.png" alt="الشعار"
@@ -178,7 +201,9 @@
       </div>
     </div>
 
-    <div class="layout" style="margin-top:12px">
+    <div class="layout">
+
+      <!-- السايدبار (يمين) -->
       <aside id="sidePanel">
         <div class="card sidebar-card">
           <img class="avatar" src="https://i.imgur.com/B3UkEQ0.jpg" alt="صورتي" referrerpolicy="no-referrer"
@@ -219,68 +244,62 @@
         </div>
       </aside>
 
-      <section id="toolBox">
-        <div class="row">
+      <!-- رفع الصور (وسط) -->
+      <section class="card section" id="uploadsCard">
+        <div class="label">رفع الصور</div>
 
-          <!-- Inputs -->
-          <section class="card section" style="grid-area:inputs">
-            <div class="field">
-              <div class="label">رفع الصور</div>
+        <div class="drop" id="dropZone">
+          <div>
+            <strong>اسحب الصور هنا</strong>
+            <div class="mini">أو اضغط "اختيار ملفات" (يدعم: JPG / PNG / GIF / BMP / WebP).</div>
+          </div>
+          <div class="btns" style="margin:0">
+            <button class="primary" id="pickBtn" type="button">اختيار ملفات</button>
+          </div>
+        </div>
 
-              <div class="drop" id="dropZone">
-                <div>
-                  <strong>اسحب الصور هنا</strong>
-                  <div class="mini">أو اضغط "اختيار ملفات" (يدعم: JPG / PNG / GIF / BMP / WebP).</div>
-                </div>
-                <div class="btns" style="margin:0">
-                  <button class="primary" id="pickBtn" type="button">اختيار ملفات</button>
-                </div>
-              </div>
+        <input id="fileInput" type="file" accept="image/*" multiple hidden>
 
-              <input id="fileInput" type="file" accept="image/*" multiple hidden>
-              <div class="hint" style="margin-top:10px">
-                ✅ الجودة ثابتة 100% دائمًا. الأداة تحاول تعطيك <b>أكبر توفير ممكن</b> عبر تجربة Lossless و Lossy-100 واختيار الأصغر تلقائيًا.
-              </div>
+        <div class="hint" style="margin-top:10px">
+          ✅ الجودة ثابتة 100% دائمًا. الأداة تحاول تعطيك <b>أكبر توفير ممكن</b> عبر تجربة Lossless و Lossy-100 واختيار الأصغر تلقائيًا.
+        </div>
 
-              <div class="chips">
-                <span class="chip" id="qualityChip">Quality: 100%</span>
-                <span class="chip" id="engineChip">Engine: wasm-webp (libwebp)</span>
-                <span class="chip" id="countChip">0 ملفات</span>
-              </div>
-            </div>
+        <div class="chips">
+          <span class="chip" id="qualityChip">Quality: 100%</span>
+          <span class="chip" id="engineChip">Engine: wasm-webp (libwebp)</span>
+          <span class="chip" id="countChip">0 ملفات</span>
+        </div>
 
-            <div class="btns">
-              <button class="primary" id="convertBtn" disabled>تحويل إلى WebP</button>
-              <button id="zipBtn" disabled>تحميل الكل (ZIP)</button>
-              <button id="clearBtn">مسح</button>
-            </div>
+        <div class="btns" style="margin-top:12px">
+          <button class="primary" id="convertBtn" disabled>تحويل إلى WebP</button>
+          <button id="zipBtn" disabled>تحميل الكل (ZIP)</button>
+          <button class="danger" id="clearBtn">مسح</button>
+        </div>
 
-            <div id="status" class="status hidden"></div>
-            <div id="err" class="err" hidden></div>
+        <div id="status" class="status hidden"></div>
+        <div id="err" class="err" hidden></div>
 
-            <div class="hint" style="margin-top:10px">
-              الخصوصية: يتم التحويل بالكامل داخل جهازك (بدون رفع أي ملفات).
-            </div>
-          </section>
-
-          <!-- Outputs -->
-          <section class="card section" style="grid-area:outputs">
-            <div class="label" style="margin-bottom:10px">
-              <span>النتائج</span>
-              <span class="hint" id="summaryHint">—</span>
-            </div>
-
-            <div id="outList" class="list">
-              <div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>
-            </div>
-          </section>
-
+        <div class="hint" style="margin-top:12px">
+          الخصوصية: يتم التحويل بالكامل داخل جهازك (بدون رفع أي ملفات).
         </div>
       </section>
+
+      <!-- النتائج (يسار) -->
+      <section class="card section" id="resultsCard">
+        <div class="label">
+          <span>النتائج</span>
+          <span class="hint" id="summaryHint">—</span>
+        </div>
+
+        <div id="outList" class="list" style="margin-top:10px">
+          <div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>
+        </div>
+      </section>
+
     </div>
   </div>
 
-<!-- JSZip for download-all -->
+<!-- JSZip -->
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script type="module">
@@ -288,24 +307,26 @@
 
   const $ = s => document.querySelector(s);
 
-  const dropZone   = $('#dropZone');
-  const fileInput  = $('#fileInput');
-  const pickBtn    = $('#pickBtn');
-  const convertBtn = $('#convertBtn');
-  const zipBtn     = $('#zipBtn');
-  const clearBtn   = $('#clearBtn');
+  const dropZone    = $('#dropZone');
+  const fileInput   = $('#fileInput');
+  const pickBtn     = $('#pickBtn');
+  const convertBtn  = $('#convertBtn');
+  const zipBtn      = $('#zipBtn');
+  const clearBtn    = $('#clearBtn');
 
-  const outList    = $('#outList');
-  const statusEl   = $('#status');
-  const errEl      = $('#err');
-  const countChip  = $('#countChip');
-  const engineChip = $('#engineChip');
-  const summaryHint= $('#summaryHint');
+  const outList     = $('#outList');
+  const statusEl    = $('#status');
+  const errEl       = $('#err');
+  const countChip   = $('#countChip');
+  const engineChip  = $('#engineChip');
+  const summaryHint = $('#summaryHint');
 
-  const QUALITY = 100; // ثابت دائمًا
+  const QUALITY = 100; // ✅ ثابت دائمًا
 
   let queue = [];
-  let results = []; // {name, inSize, outSize, savedPct, blob, url, modeChosen, w, h, thumbUrl}
+  let results = []; // {name,inSize,outSize,savedPct,blob,url,modeChosen,w,h,thumbUrl}
+
+  $('#backBtn').addEventListener('click', ()=>history.back());
 
   function setStatus(kind, msg){
     statusEl.className = 'status ' + (kind||'') + (msg ? '' : ' hidden');
@@ -322,8 +343,7 @@
 
   function fmtBytes(n){
     const u = ['B','KB','MB','GB'];
-    let i = 0;
-    let x = n;
+    let i = 0, x = n;
     while(x >= 1024 && i < u.length-1){ x/=1024; i++; }
     return `${x.toFixed(i?1:0)} ${u[i]}`;
   }
@@ -331,13 +351,21 @@
     if(!inB) return 0;
     return Math.round(((inB - outB) / inB) * 100);
   }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[m]));
+  }
 
-  function resetAll(){
-    // revoke object urls
+  function revokeAll(){
     for(const r of results){
       try{ URL.revokeObjectURL(r.url); }catch(e){}
       try{ URL.revokeObjectURL(r.thumbUrl); }catch(e){}
     }
+  }
+
+  function resetAll(){
+    revokeAll();
     results = [];
     queue = [];
     outList.innerHTML = '<div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>';
@@ -350,27 +378,33 @@
     fileInput.value = '';
   }
 
-  $('#backBtn').addEventListener('click', ()=>history.back());
   clearBtn.addEventListener('click', resetAll);
 
   function addFiles(files){
+    clearErr(); setStatus('', '');
+
     const arr = Array.from(files || []).filter(f => (f.type || '').startsWith('image/'));
-    if(!arr.length) return;
+    if(!arr.length){
+      setStatus('warn','اختر صور فقط.');
+      return;
+    }
 
     queue.push(...arr);
     countChip.textContent = `${queue.length} ملفات`;
     convertBtn.disabled = queue.length === 0;
 
-    // render a lightweight list (pre-convert)
     renderPending();
   }
 
   function renderPending(){
     if(!queue.length){
       outList.innerHTML = '<div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>';
+      summaryHint.textContent = '—';
       return;
     }
-    outList.innerHTML = queue.map((f, idx)=>`
+
+    summaryHint.textContent = `جاهز للتحويل: ${queue.length} صورة`;
+    outList.innerHTML = queue.map((f)=>`
       <div class="item">
         <div class="itemTop">
           <div>
@@ -386,16 +420,9 @@
     `).join('');
   }
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[m]));
-  }
-
   pickBtn.addEventListener('click', ()=> fileInput.click());
   fileInput.addEventListener('change', e => addFiles(e.target.files));
 
-  // drag/drop
   ['dragenter','dragover'].forEach(ev=>{
     dropZone.addEventListener(ev, (e)=>{
       e.preventDefault(); e.stopPropagation();
@@ -417,6 +444,7 @@
     pickBtn.disabled = isBusy;
     clearBtn.disabled = isBusy;
     zipBtn.disabled = isBusy || results.length === 0;
+
     if(isBusy){
       convertBtn.classList.add('loading');
       convertBtn.textContent = '... جاري التحويل';
@@ -424,56 +452,6 @@
       convertBtn.classList.remove('loading');
       convertBtn.textContent = 'تحويل إلى WebP';
     }
-  }
-
-  async function fileToImageBitmap(file){
-    // faster + respects EXIF orientation in most browsers when using createImageBitmap with options
-    const blobURL = URL.createObjectURL(file);
-    try{
-      const img = await fetch(blobURL).then(r=>r.blob());
-      // createImageBitmap can fail for some types; fallback handled outside
-      return await createImageBitmap(img, { imageOrientation: "from-image" });
-    } finally {
-      try{ URL.revokeObjectURL(blobURL); }catch(e){}
-    }
-  }
-
-  async function bitmapToImageData(bitmap){
-    const canvas = document.createElement('canvas');
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(bitmap, 0, 0);
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    return { imgData, width: canvas.width, height: canvas.height };
-  }
-
-  function hasAlpha(imgData){
-    const d = imgData.data;
-    for(let i=3; i<d.length; i+=4){
-      if(d[i] !== 255) return true;
-    }
-    return false;
-  }
-
-  async function encodeBestWebP(imgData, width, height){
-    // نجرب الاثنين (مع Quality=100 دائمًا) ونأخذ الأصغر
-    // lossless: 1 => بدون فقد، lossless: 0 => lossy (لكن quality=100)
-    const alpha = hasAlpha(imgData);
-    const data = imgData.data;
-
-    const [losslessBytes, lossyBytes] = await Promise.all([
-      encode(data, width, height, alpha, { lossless: 1, quality: QUALITY }),
-      encode(data, width, height, alpha, { lossless: 0, quality: QUALITY })
-    ]);
-
-    const ll = losslessBytes ? losslessBytes.length : Number.POSITIVE_INFINITY;
-    const ly = lossyBytes ? lossyBytes.length : Number.POSITIVE_INFINITY;
-
-    if(ly < ll){
-      return { bytes: lossyBytes, chosen: 'Lossy (Quality 100)' };
-    }
-    return { bytes: losslessBytes, chosen: 'Lossless (100% مطابق)' };
   }
 
   function updateProgress(idx, pct, label){
@@ -487,9 +465,65 @@
     }
   }
 
+  async function fileToBitmap(file){
+    if("createImageBitmap" in window){
+      try{
+        return await createImageBitmap(file, { imageOrientation: "from-image" });
+      }catch(_){}
+    }
+    const url = URL.createObjectURL(file);
+    try{
+      const img = new Image();
+      img.decoding = "async";
+      await new Promise((res, rej)=>{
+        img.onload = ()=>res();
+        img.onerror = ()=>rej(new Error("تعذر قراءة الصورة"));
+        img.src = url;
+      });
+      return await createImageBitmap(img);
+    } finally {
+      try{ URL.revokeObjectURL(url); }catch(e){}
+    }
+  }
+
+  async function bitmapToImageData(bitmap){
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d', { willReadFrequently:true });
+    ctx.drawImage(bitmap, 0, 0);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    return { imgData, width: canvas.width, height: canvas.height };
+  }
+
+  function hasAlpha(imgData){
+    const d = imgData.data;
+    for(let i=3; i<d.length; i+=4){
+      if(d[i] !== 255) return true;
+    }
+    return false;
+  }
+
+  async function encodeBest(imgData, width, height){
+    const alpha = hasAlpha(imgData);
+    const data = imgData.data;
+
+    const [losslessBytes, lossyBytes] = await Promise.all([
+      encode(data, width, height, alpha, { lossless: 1, quality: QUALITY }),
+      encode(data, width, height, alpha, { lossless: 0, quality: QUALITY })
+    ]);
+
+    const ll = losslessBytes ? losslessBytes.length : Number.POSITIVE_INFINITY;
+    const ly = lossyBytes ? lossyBytes.length : Number.POSITIVE_INFINITY;
+
+    if(ly < ll) return { bytes: lossyBytes, chosen: 'Lossy (Quality 100)' };
+    return { bytes: losslessBytes, chosen: 'Lossless' };
+  }
+
   function renderResults(){
     if(!results.length){
       outList.innerHTML = '<div class="hint">لا توجد نتائج بعد.</div>';
+      summaryHint.textContent = '—';
       return;
     }
 
@@ -497,7 +531,7 @@
     const totalOut = results.reduce((a,r)=>a+r.outSize,0);
     const totalPct = pctSaved(totalIn, totalOut);
 
-    summaryHint.textContent = `الإجمالي: ${fmtBytes(totalIn)} → ${fmtBytes(totalOut)} (توفير ${totalPct}%)`;
+    summaryHint.innerHTML = `الإجمالي: ${fmtBytes(totalIn)} → ${fmtBytes(totalOut)} (توفير <b>${totalPct}%</b>)`;
     zipBtn.disabled = false;
 
     outList.innerHTML = results.map((r)=>`
@@ -506,7 +540,8 @@
           <div>
             <div class="name">${escapeHtml(r.name)}</div>
             <div class="meta">
-              ${r.w}×${r.h} — ${escapeHtml(r.modeChosen)} — ${fmtBytes(r.inSize)} → ${fmtBytes(r.outSize)} (توفير ${r.savedPct}%)
+              ${r.w}×${r.h} — ${escapeHtml(r.modeChosen)} — ${fmtBytes(r.inSize)} → ${fmtBytes(r.outSize)}
+              <span class="${r.savedPct>=25?'ok':(r.savedPct>=5?'warn':'')}"> (توفير ${r.savedPct}%)</span>
             </div>
           </div>
           <div class="kpis">
@@ -529,13 +564,19 @@
   async function convertAll(){
     clearErr();
     setStatus('', '');
-    if(!queue.length) return;
+    if(!queue.length){ setStatus('warn','ارفع صور أولاً.'); return; }
 
     setUIBusy(true);
-    setStatus('warn', 'جاري التحويل… لا تغلق الصفحة.');
+    setStatus('warn','جاري التحويل… لا تغلق الصفحة.');
 
     try{
-      // show initial progress list
+      try{
+        const ver = await encoderVersion();
+        engineChip.textContent = `Engine: wasm-webp (libwebp ${ver})`;
+      }catch(_){
+        engineChip.textContent = `Engine: wasm-webp (libwebp)`;
+      }
+
       outList.innerHTML = queue.map((f)=>`
         <div class="item">
           <div class="itemTop">
@@ -553,60 +594,27 @@
 
       results = [];
 
-      // init engine info
-      try{
-        const ver = await encoderVersion();
-        engineChip.textContent = `Engine: wasm-webp (libwebp ${ver})`;
-      }catch(e){
-        engineChip.textContent = `Engine: wasm-webp (libwebp)`;
-      }
-
       for(let i=0; i<queue.length; i++){
         const file = queue[i];
 
-        updateProgress(i, 10, 'قراءة الصورة…');
+        updateProgress(i, 10, 'قراءة…');
+        const bitmap = await fileToBitmap(file);
 
-        // decode to bitmap
-        let bitmap;
-        try{
-          bitmap = await fileToImageBitmap(file);
-        }catch(e){
-          // fallback via <img>
-          updateProgress(i, 12, 'تحميل (fallback)…');
-          const url = URL.createObjectURL(file);
-          bitmap = await new Promise((resolve, reject)=>{
-            const img = new Image();
-            img.onload = async ()=> {
-              try{
-                const b = await createImageBitmap(img);
-                resolve(b);
-              }catch(err){ reject(err); }
-              finally{ try{ URL.revokeObjectURL(url); }catch(_){} }
-            };
-            img.onerror = ()=>{ try{ URL.revokeObjectURL(url); }catch(_){}; reject(new Error('تعذر قراءة الصورة')); };
-            img.src = url;
-          });
-        }
-
-        updateProgress(i, 35, 'استخراج البكسلات…');
+        updateProgress(i, 35, 'تحضير…');
         const { imgData, width, height } = await bitmapToImageData(bitmap);
 
-        updateProgress(i, 55, 'تحويل إلى WebP…');
-        const { bytes, chosen } = await encodeBestWebP(imgData, width, height);
+        updateProgress(i, 60, 'تحويل…');
+        const { bytes, chosen } = await encodeBest(imgData, width, height);
 
-        if(!bytes){
-          updateProgress(i, 0, 'فشل التحويل');
-          throw new Error(`فشل تحويل الملف: ${file.name}`);
-        }
+        if(!bytes) throw new Error(`فشل تحويل الملف: ${file.name}`);
 
         const blob = new Blob([bytes], { type:'image/webp' });
         const outName = file.name.replace(/\.(png|jpg|jpeg|gif|bmp|webp|tiff|tif)$/i,'') + '.webp';
         const url = URL.createObjectURL(blob);
-
-        // thumb (original) for display
         const thumbUrl = URL.createObjectURL(file);
 
         const saved = pctSaved(file.size, blob.size);
+
         results.push({
           name: outName,
           inSize: file.size,
@@ -623,15 +631,14 @@
         updateProgress(i, 100, 'تم');
       }
 
-      // clear queue and render results
       queue = [];
       countChip.textContent = '0 ملفات';
       convertBtn.disabled = true;
 
       renderResults();
-      setStatus('ok', 'تم التحويل بنجاح.');
+      setStatus('ok','تم التحويل بنجاح.');
     }catch(e){
-      setStatus('bad', 'فشل التحويل.');
+      setStatus('bad','فشل التحويل.');
       showErr('خطأ: ' + String(e?.message || e || ''));
     }finally{
       setUIBusy(false);
@@ -646,7 +653,7 @@
 
     try{
       setUIBusy(true);
-      setStatus('warn', 'جاري تجهيز ملف ZIP…');
+      setStatus('warn','جاري تجهيز ZIP…');
 
       const zip = new JSZip();
       const folder = zip.folder('webp');
@@ -666,16 +673,15 @@
       a.remove();
 
       setTimeout(()=>{ try{ URL.revokeObjectURL(zipUrl); }catch(e){} }, 3000);
-      setStatus('ok', 'تم تحميل ZIP.');
+      setStatus('ok','تم تحميل ZIP.');
     }catch(e){
-      setStatus('bad', 'تعذر إنشاء ZIP.');
+      setStatus('bad','تعذر إنشاء ZIP.');
       showErr('خطأ: ' + String(e?.message || e || ''));
     }finally{
       setUIBusy(false);
     }
   });
 
-  // init
   resetAll();
 </script>
 </body>
