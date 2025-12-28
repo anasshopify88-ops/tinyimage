@@ -104,7 +104,6 @@
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;color:var(--muted);font-weight:800}
 
-  /* ✅ dropZone صار label عشان يفتح اختيار الملفات حتى لو JS فيه مشكلة */
   .drop{
     border:1.5px dashed #cbd5e1;
     background:linear-gradient(180deg,#fff,#f9fbff);
@@ -136,8 +135,15 @@
     width:84px; height:84px; border-radius:12px; border:1px solid var(--border);
     background:#fff; object-fit:contain; object-position:center;
   }
+
+  /* ✅ شريط تقدم واضح */
   .bar{height:10px; border-radius:999px; background:#eef2ff; border:1px solid var(--border); overflow:hidden}
-  .bar > i{display:block; height:100%; width:0%}
+  .bar > i{
+    display:block; height:100%; width:0%;
+    background:var(--accent);
+    transition:width .2s ease;
+  }
+
   .kpis{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
   .smallLink{
     border:1px solid var(--border); background:#fff; border-radius:12px; padding:8px 10px;
@@ -148,7 +154,6 @@
   .smallLink:hover{transform:translateY(-2px); border-color:#cbd5e1; box-shadow:0 8px 18px rgba(15,23,42,.08)}
   .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--error)}
 
-  /* ✅ بدل display:none: حل جذري لمشاكل iOS/Safari */
   .visually-hidden-file{
     position:absolute !important;
     width:1px !important;
@@ -195,7 +200,7 @@
         <div>
           <h1>أداة مجانية لتحويل مختلف أنواع الصور الى WebP</h1>
           <div class="sub">
-            تحويل محلي 100% داخل المتصفح — بدون رفع ملفات. الجودة ثابتة 100%، والأداة تختار تلقائيًا أصغر نتيجة بين (Lossless) و (Lossy 100%) عند توفر محرك wasm.
+            تحويل محلي 100% داخل المتصفح — بدون رفع ملفات. الأداة تختار تلقائيًا نسخة أصغر مع المحافظة على الجودة.
           </div>
         </div>
         <img class="logo title-logo" src="https://i.imgur.com/meUEoP7.png" alt="الشعار"
@@ -228,6 +233,9 @@
             <div class="s-item"><a href="https://smg.anasrashed.com" target="_blank" rel="noopener">أداة منشئ خريطة الموقع</a></div>
             <div class="s-item"><a href="https://keywords.anasrashed.com" target="_blank" rel="noopener">أداة الكلمات المفتاحية</a></div>
             <div class="s-item"><a href="https://checker.anasrashed.com" target="_blank" rel="noopener">أداة فحص الموقع</a></div>
+
+            <!-- ✅ إضافة جديدة -->
+            <div class="s-item"><a href="https://tinyimage.anasrashed.com" target="_blank" rel="noopener">أداة تحويل الصور الى WebP</a></div>
           </div>
         </div>
       </aside>
@@ -236,27 +244,20 @@
       <section class="card section" id="uploadsCard">
         <div class="label">رفع الصور</div>
 
-        <!-- ✅ label يفتح اختيار الملفات تلقائيًا حتى لو JS تعطل -->
         <label class="drop" id="dropZone" for="fileInput" aria-label="منطقة رفع الصور" tabindex="0">
           <div>
             <strong>اسحب الصور هنا</strong>
-            <div class="mini">أو اضغط هنا/على زر "اختيار ملفات" (يدعم: JPG / PNG / GIF / BMP / WebP).</div>
+            <div class="mini">أو اضغط هنا/على زر "اختيار ملفات".</div>
           </div>
           <div class="btns" style="margin:0">
             <button class="primary" id="pickBtn" type="button">اختيار ملفات</button>
           </div>
         </label>
 
-        <!-- ✅ حل جذري: لا تستخدم display:none -->
         <input id="fileInput" class="visually-hidden-file" type="file" accept="image/*" multiple>
 
-        <div class="hint" style="margin-top:10px">
-          ✅ الجودة ثابتة 100% دائمًا. الأداة تحاول تعطيك <b>أكبر توفير ممكن</b> عبر تجربة Lossless و Lossy-100 واختيار الأصغر تلقائيًا (إذا توفر محرك wasm).
-        </div>
-
         <div class="chips">
-          <span class="chip" id="qualityChip">Quality: 100%</span>
-          <span class="chip" id="engineChip">Engine: — جاري التهيئة…</span>
+          <span class="chip" id="qualityChip">Smart Quality: PNG (1.00→0.92) | JPG (0.92→0.86)</span>
           <span class="chip" id="countChip">0 ملفات</span>
         </div>
 
@@ -268,10 +269,6 @@
 
         <div id="status" class="status hidden"></div>
         <div id="err" class="err" hidden></div>
-
-        <div class="hint" style="margin-top:12px">
-          الخصوصية: يتم التحويل بالكامل داخل جهازك (بدون رفع أي ملفات).
-        </div>
       </section>
 
       <!-- النتائج (يسار) -->
@@ -289,24 +286,15 @@
     </div>
   </div>
 
-<noscript>
-  <div style="max-width:1200px;margin:16px auto;padding:12px 16px;border:1px solid #fecaca;border-radius:12px;background:#fff;">
-    هذه الأداة تحتاج JavaScript ليعمل التحويل والرفع.
-  </div>
-</noscript>
-
-<!-- JSZip -->
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script>
 (function(){
   function on(el, ev, fn, opts){
     if(!el) return;
-    // ✅ توافق مع متصفحات لا تدعم options object
     try{ el.addEventListener(ev, fn, opts); }
     catch(_){ el.addEventListener(ev, fn, !!opts); }
   }
-
   function supportsPassive(){
     var ok = false;
     try{
@@ -316,7 +304,6 @@
     }catch(e){}
     return ok;
   }
-
   var passiveOK = supportsPassive();
   var nonPassive = passiveOK ? { passive:false } : false;
 
@@ -334,15 +321,11 @@
     var statusEl    = $('#status');
     var errEl       = $('#err');
     var countChip   = $('#countChip');
-    var engineChip  = $('#engineChip');
     var summaryHint = $('#summaryHint');
     var backBtn     = $('#backBtn');
 
-    var QUALITY = 100;
-
     var queue = [];
     var results = [];
-    var canCanvasWebP = null; // Promise cache
 
     if(backBtn) on(backBtn,'click', function(){ history.back(); });
 
@@ -405,6 +388,11 @@
       var name = (file.name || '').toLowerCase();
       return (/\.(png|jpe?g|gif|bmp|webp|tiff|tif)$/i.test(name));
     }
+    function isPngLike(file){
+      var t = (file.type || '').toLowerCase();
+      var n = (file.name || '').toLowerCase();
+      return t === 'image/png' || t === 'image/gif' || t === 'image/bmp' || /\.(png|gif|bmp)$/i.test(n);
+    }
 
     function addFiles(files){
       clearErr(); setStatus('', '');
@@ -442,19 +430,15 @@
       }).join('');
     }
 
-    // ✅ زر اختيار ملفات (مع وجود label أصلاً كـ fallback)
     on(pickBtn,'click', function(e){
       e.preventDefault();
       try{ fileInput.click(); }catch(_){}
     });
-
     on(fileInput,'change', function(e){ addFiles(e.target.files); });
 
-    // ✅ drag & drop: منع المتصفح يفتح الملف
     ['dragover','drop'].forEach(function(ev){
       on(window, ev, function(e){ e.preventDefault(); }, nonPassive);
     });
-
     ['dragenter','dragover'].forEach(function(ev){
       on(dropZone, ev, function(e){
         e.preventDefault(); e.stopPropagation();
@@ -471,21 +455,6 @@
       var dt = e.dataTransfer;
       if(dt && dt.files) addFiles(dt.files);
     }, nonPassive);
-
-    // ✅ لصق صور من الحافظة (اختياري لكن مفيد)
-    on(window,'paste', function(e){
-      try{
-        var items = (e.clipboardData && e.clipboardData.items) ? e.clipboardData.items : [];
-        var files = [];
-        for(var i=0;i<items.length;i++){
-          if(items[i].kind === 'file'){
-            var f = items[i].getAsFile();
-            if(f) files.push(f);
-          }
-        }
-        if(files.length) addFiles(files);
-      }catch(_){}
-    });
 
     function setUIBusy(isBusy){
       convertBtn.disabled = isBusy || queue.length === 0;
@@ -508,158 +477,102 @@
       var bar = item.querySelector('.bar > i');
       if(bar) bar.style.width = (pct + '%');
       var kpis = item.querySelector('.kpis');
-      if(kpis && label){
-        kpis.innerHTML = '<span class="chip">' + escapeHtml(label) + '</span>';
+      if(kpis){
+        var text = (pct + '%') + (label ? (' — ' + label) : '');
+        kpis.innerHTML = '<span class="chip">' + escapeHtml(text) + '</span>';
       }
     }
 
-    function hasAlpha(imgData){
-      var d = imgData.data;
-      for(var i=3; i<d.length; i+=4){
-        if(d[i] !== 255) return true;
-      }
-      return false;
-    }
-
-    function fileToImageData(file){
-      // Promise
-      return new Promise(function(resolve, reject){
-        if ('createImageBitmap' in window) {
-          try{
-            createImageBitmap(file, { imageOrientation: "from-image" }).then(function(bmp){
-              try{
-                var canvas = document.createElement('canvas');
-                canvas.width = bmp.width;
-                canvas.height = bmp.height;
-                var ctx = canvas.getContext('2d', { willReadFrequently:true });
-                ctx.drawImage(bmp, 0, 0);
-                var imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
-                try{ bmp.close && bmp.close(); }catch(_){}
-                resolve({ imgData: imgData, width: canvas.width, height: canvas.height });
-              }catch(e){
-                reject(e);
-              }
-            }).catch(function(){ fallback(); });
-            return;
-          }catch(_){}
-        }
-        fallback();
-
-        function fallback(){
-          var url = URL.createObjectURL(file);
-          var img = new Image();
-          img.decoding = 'async';
-          img.onload = function(){
-            try{
-              var w = img.naturalWidth || img.width;
-              var h = img.naturalHeight || img.height;
-              var canvas = document.createElement('canvas');
-              canvas.width = w; canvas.height = h;
-              var ctx = canvas.getContext('2d', { willReadFrequently:true });
-              ctx.drawImage(img, 0, 0);
-              var imgData = ctx.getImageData(0,0,w,h);
-              resolve({ imgData: imgData, width: w, height: h });
-            }catch(e){
-              reject(e);
-            }finally{
-              try{ URL.revokeObjectURL(url); }catch(_){}
-            }
-          };
-          img.onerror = function(){
-            try{ URL.revokeObjectURL(url); }catch(_){}
-            reject(new Error('تعذر قراءة الصورة'));
-          };
-          img.src = url;
-        }
-      });
-    }
-
-    function testCanvasWebPOnce(){
-      if(canCanvasWebP) return canCanvasWebP;
-      canCanvasWebP = new Promise(function(res){
+    async function fileToBitmap(file){
+      // الأفضل: createImageBitmap
+      if('createImageBitmap' in window){
         try{
-          var c = document.createElement('canvas');
-          c.width = 1; c.height = 1;
-          var ctx = c.getContext('2d');
-          ctx.fillRect(0,0,1,1);
-          if(!c.toBlob){ res(false); return; }
-          c.toBlob(function(b){
-            res(!!(b && b.type === 'image/webp'));
-          }, 'image/webp', 1.0);
-        }catch(e){ res(false); }
-      });
-      return canCanvasWebP;
-    }
-
-    async function loadWebpEngine(){
-      // نحاول wasm-webp عبر jsdelivr ثم unpkg
+          return await createImageBitmap(file, { imageOrientation: "from-image" });
+        }catch(_){}
+      }
+      // fallback: Image()
+      var url = URL.createObjectURL(file);
       try{
-        var mod = await import('https://cdn.jsdelivr.net/npm/wasm-webp@0.0.2/dist/esm/index.js');
-        window.__webp = { encoderVersion: mod.encoderVersion, encode: mod.encode };
-        return { ok:true, via:'wasm-webp/jsdelivr' };
-      }catch(e1){
-        try{
-          var mod2 = await import('https://unpkg.com/wasm-webp@0.0.2/dist/esm/index.js');
-          window.__webp = { encoderVersion: mod2.encoderVersion, encode: mod2.encode };
-          return { ok:true, via:'wasm-webp/unpkg' };
-        }catch(e2){
-          window.__webp = null;
-          return { ok:false, err:(e2 && e2.message) ? e2.message : String(e2) };
+        var img = new Image();
+        img.decoding = 'async';
+        await new Promise(function(res, rej){
+          img.onload = function(){ res(); };
+          img.onerror = function(){ rej(new Error('تعذر قراءة الصورة')); };
+          img.src = url;
+        });
+        // نحولها لBitmap عن طريق رسمها على Canvas ثم createImageBitmap(canvas)
+        var c = document.createElement('canvas');
+        c.width = img.naturalWidth || img.width;
+        c.height = img.naturalHeight || img.height;
+        var ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        if('createImageBitmap' in window){
+          return await createImageBitmap(c);
         }
+        // آخر حل: نرجع canvas نفسه كـ "bitmap-like"
+        return { __canvas: c, width: c.width, height: c.height };
+      } finally {
+        try{ URL.revokeObjectURL(url); }catch(_){}
       }
     }
 
-    function imageDataToWebPViaCanvas(imgData, width, height, quality01){
-      return new Promise(async function(resolve, reject){
-        var ok = await testCanvasWebPOnce();
-        if(!ok){ reject(new Error('Canvas WebP غير مدعوم على هذا المتصفح.')); return; }
+    function bitmapToWebPBlob(bitmap, quality){
+      return new Promise(function(resolve, reject){
         try{
           var canvas = document.createElement('canvas');
-          canvas.width = width; canvas.height = height;
-          var ctx = canvas.getContext('2d', { willReadFrequently:true });
-          ctx.putImageData(imgData, 0, 0);
+          var w = bitmap.width || (bitmap.__canvas && bitmap.__canvas.width) || 0;
+          var h = bitmap.height || (bitmap.__canvas && bitmap.__canvas.height) || 0;
+          if(!w || !h){ reject(new Error('أبعاد الصورة غير صالحة')); return; }
+
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+
+          if(bitmap.__canvas){
+            ctx.drawImage(bitmap.__canvas, 0, 0);
+          }else{
+            ctx.drawImage(bitmap, 0, 0);
+          }
+
+          if(!canvas.toBlob){
+            reject(new Error('متصفحك لا يدعم toBlob.'));
+            return;
+          }
+
           canvas.toBlob(function(blob){
-            if(!blob || blob.type !== 'image/webp'){
-              reject(new Error('فشل إنشاء WebP عبر Canvas (قد يكون المتصفح رجّع PNG).'));
+            if(!blob) { reject(new Error('فشل إنشاء الملف.')); return; }
+            // بعض المتصفحات لو ما تدعم webp قد ترجع png
+            if(blob.type !== 'image/webp'){
+              reject(new Error('متصفحك لا يدعم WebP (canvas رجّع: ' + blob.type + ').'));
               return;
             }
-            blob.arrayBuffer().then(function(buf){
-              resolve(new Uint8Array(buf));
-            }).catch(reject);
-          }, 'image/webp', quality01);
+            resolve(blob);
+          }, 'image/webp', quality);
         }catch(e){ reject(e); }
       });
     }
 
-    async function encodeBest(imgData, width, height){
-      // 1) wasm-webp (أفضل خيار)
-      if(window.__webp && window.__webp.encode){
-        var alpha = hasAlpha(imgData);
-        var data = imgData.data;
-        var encode = window.__webp.encode;
+    async function encodeSmart(file, bitmap){
+      // PNG/نصوص: جرب 1.0 ثم 0.92 واختر الأصغر إذا الفرق واضح
+      // JPG: جرب 0.92 ثم 0.86 واختر الأصغر إذا الفرق واضح
+      var pngLike = isPngLike(file);
 
-        var p1 = encode(data, width, height, alpha, { lossless: 1, quality: QUALITY });
-        var p2 = encode(data, width, height, alpha, { lossless: 0, quality: QUALITY });
+      var q1 = pngLike ? 1.0 : 0.92;
+      var q2 = pngLike ? 0.92 : 0.86;
 
-        var both = await Promise.all([p1, p2]);
-        var losslessBytes = both[0];
-        var lossyBytes = both[1];
+      // 1) التحويل الأساسي
+      var b1 = await bitmapToWebPBlob(bitmap, q1);
 
-        var ll = losslessBytes ? losslessBytes.length : Number.POSITIVE_INFINITY;
-        var ly = lossyBytes ? lossyBytes.length : Number.POSITIVE_INFINITY;
+      // 2) تحويل ضغط أعلى
+      var b2 = await bitmapToWebPBlob(bitmap, q2);
 
-        if(ly < ll) return { bytes: lossyBytes, chosen: 'Lossy (Quality 100)' };
-        return { bytes: losslessBytes, chosen: 'Lossless' };
+      // اختيار الأصغر، لكن بدون “هبوط قوي”:
+      // - إذا b2 أصغر بنسبة أقل من 8%، نثبت على b1 (للحفاظ على الجودة)
+      var savePct = pctSaved(b1.size, b2.size);
+      if(savePct >= 8 && b2.size < b1.size){
+        return { blob: b2, chosen: 'Canvas WebP q=' + q2.toFixed(2) };
       }
-
-      // 2) Canvas WebP fallback (إذا مدعوم)
-      var ok = await testCanvasWebPOnce();
-      if(ok){
-        var bytes = await imageDataToWebPViaCanvas(imgData, width, height, 1.0);
-        return { bytes: bytes, chosen: 'Canvas WebP (Quality 100)' };
-      }
-
-      throw new Error('محرك التحويل غير متاح. (wasm-webp فشل + Canvas WebP غير مدعوم)');
+      return { blob: b1, chosen: 'Canvas WebP q=' + q1.toFixed(2) };
     }
 
     function renderResults(){
@@ -712,7 +625,7 @@
       if(!queue.length){ setStatus('warn','ارفع صور أولاً.'); return; }
 
       setUIBusy(true);
-      setStatus('warn','جاري التحويل… لا تغلق الصفحة.');
+      setStatus('warn','جاري التحويل…');
 
       try{
         outList.innerHTML = queue.map(function(f){
@@ -735,31 +648,32 @@
         for(var i=0; i<queue.length; i++){
           var file = queue[i];
 
-          updateProgress(i, 10, 'قراءة…');
-          var read = await fileToImageData(file);
-          var imgData = read.imgData, width = read.width, height = read.height;
+          updateProgress(i, 10, 'قراءة');
+          var bmp = await fileToBitmap(file);
 
-          updateProgress(i, 60, 'تحويل…');
-          var enc = await encodeBest(imgData, width, height);
+          var w = bmp.width || (bmp.__canvas && bmp.__canvas.width) || 0;
+          var h = bmp.height || (bmp.__canvas && bmp.__canvas.height) || 0;
 
-          var blob = new Blob([enc.bytes], { type:'image/webp' });
+          updateProgress(i, 55, 'تحويل');
+          var enc = await encodeSmart(file, bmp);
+
+          updateProgress(i, 85, 'تجهيز');
           var outName = (file.name || 'image').replace(/\.(png|jpg|jpeg|gif|bmp|webp|tiff|tif)$/i,'') + '.webp';
-
-          var url = URL.createObjectURL(blob);
+          var url = URL.createObjectURL(enc.blob);
           var thumbUrl = URL.createObjectURL(file);
 
-          var saved = pctSaved(file.size, blob.size);
+          var saved = pctSaved(file.size, enc.blob.size);
 
           results.push({
             name: outName,
             inSize: file.size,
-            outSize: blob.size,
+            outSize: enc.blob.size,
             savedPct: saved,
-            blob: blob,
+            blob: enc.blob,
             url: url,
             modeChosen: enc.chosen,
-            w: width,
-            h: height,
+            w: w,
+            h: h,
             thumbUrl: thumbUrl
           });
 
@@ -792,7 +706,6 @@
 
         var zip = new JSZip();
         var folder = zip.folder('webp');
-
         results.forEach(function(r){
           folder.file(r.name, r.blob);
         });
@@ -817,35 +730,6 @@
       }
     });
 
-    // ✅ تهيئة المحرك بشكل واضح
-    (async function(){
-      engineChip.textContent = 'Engine: — جاري التحميل…';
-
-      var loaded = await loadWebpEngine();
-      if(loaded.ok){
-        try{
-          if(window.__webp && window.__webp.encoderVersion){
-            var ver = await window.__webp.encoderVersion();
-            engineChip.textContent = 'Engine: wasm-webp (libwebp ' + ver + ') — OK';
-          }else{
-            engineChip.textContent = 'Engine: wasm-webp — OK';
-          }
-        }catch(_){
-          engineChip.textContent = 'Engine: wasm-webp — OK';
-        }
-      }else{
-        var can = await testCanvasWebPOnce();
-        if(can){
-          engineChip.textContent = 'Engine: Canvas WebP — OK (Fallback)';
-          setStatus('warn','ملاحظة: تعذر تحميل محرك wasm من CDN، تم تفعيل التحويل عبر Canvas WebP.');
-        }else{
-          engineChip.textContent = 'Engine: غير متاح (wasm فشل + Canvas WebP غير مدعوم)';
-          setStatus('warn','ملاحظة: الرفع شغال، لكن التحويل يحتاج السماح بتحميل المكتبات من CDN أو متصفح يدعم WebP عبر Canvas.');
-        }
-      }
-    })();
-
-    // أول حالة
     resetAll();
   }
 
