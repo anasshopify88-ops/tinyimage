@@ -200,7 +200,7 @@
         <div>
           <h1>أداة مجانية لتحويل مختلف أنواع الصور الى WebP</h1>
           <div class="sub">
-            تحويل محلي 100% داخل المتصفح — بدون رفع ملفات. الأداة تختار تلقائيًا نسخة أصغر مع المحافظة على الجودة.
+            تحويل محلي 100% داخل المتصفح — بدون رفع ملفات. Smart Safe: جودة 100% كأساس + ضغط أعلى فقط إذا ما فيه فرق بصري.
           </div>
         </div>
         <img class="logo title-logo" src="https://i.imgur.com/meUEoP7.png" alt="الشعار"
@@ -257,7 +257,7 @@
         <input id="fileInput" class="visually-hidden-file" type="file" accept="image/*" multiple>
 
         <div class="chips">
-          <span class="chip" id="qualityChip">Smart Quality: PNG (1.00→0.92) | JPG (0.92→0.86)</span>
+          <span class="chip" id="qualityChip">Smart Safe: Base 100% (q=1.00) + Try q=0.92/0.88 إذا بدون فرق بصري</span>
           <span class="chip" id="countChip">0 ملفات</span>
         </div>
 
@@ -327,6 +327,15 @@
     var queue = [];
     var results = [];
 
+    // Smart Safe knobs (تقدر تغيّرها لو حبيت)
+    var BASE_Q = 1.0;                 // جودة 100% أساس
+    var TRY_QS = [0.92, 0.88];         // محاولات ضغط أعلى
+    var MIN_SAVING_PCT = 8;            // لازم توفير فعلي على الأقل
+    var CMP_MAX = 256;                 // أقصى حجم لفحص البكسلات (للسرعة)
+    var SAMPLE_STEP = 2;               // كل كم بكسل نعمل عينة
+    var MEAN_THRESH = 1.75;            // متوسط فرق الألوان المسموح (0-255)
+    var MAX_THRESH  = 20;              // أقصى فرق مسموح في أي قناة
+
     if(backBtn) on(backBtn,'click', function(){ history.back(); });
 
     function setStatus(kind, msg){
@@ -387,11 +396,6 @@
       if(t.indexOf('image/') === 0) return true;
       var name = (file.name || '').toLowerCase();
       return (/\.(png|jpe?g|gif|bmp|webp|tiff|tif)$/i.test(name));
-    }
-    function isPngLike(file){
-      var t = (file.type || '').toLowerCase();
-      var n = (file.name || '').toLowerCase();
-      return t === 'image/png' || t === 'image/gif' || t === 'image/bmp' || /\.(png|gif|bmp)$/i.test(n);
     }
 
     function addFiles(files){
@@ -484,13 +488,9 @@
     }
 
     async function fileToBitmap(file){
-      // الأفضل: createImageBitmap
       if('createImageBitmap' in window){
-        try{
-          return await createImageBitmap(file, { imageOrientation: "from-image" });
-        }catch(_){}
+        try{ return await createImageBitmap(file, { imageOrientation: "from-image" }); }catch(_){}
       }
-      // fallback: Image()
       var url = URL.createObjectURL(file);
       try{
         var img = new Image();
@@ -500,7 +500,6 @@
           img.onerror = function(){ rej(new Error('تعذر قراءة الصورة')); };
           img.src = url;
         });
-        // نحولها لBitmap عن طريق رسمها على Canvas ثم createImageBitmap(canvas)
         var c = document.createElement('canvas');
         c.width = img.naturalWidth || img.width;
         c.height = img.naturalHeight || img.height;
@@ -509,7 +508,6 @@
         if('createImageBitmap' in window){
           return await createImageBitmap(c);
         }
-        // آخر حل: نرجع canvas نفسه كـ "bitmap-like"
         return { __canvas: c, width: c.width, height: c.height };
       } finally {
         try{ URL.revokeObjectURL(url); }catch(_){}
@@ -541,7 +539,6 @@
 
           canvas.toBlob(function(blob){
             if(!blob) { reject(new Error('فشل إنشاء الملف.')); return; }
-            // بعض المتصفحات لو ما تدعم webp قد ترجع png
             if(blob.type !== 'image/webp'){
               reject(new Error('متصفحك لا يدعم WebP (canvas رجّع: ' + blob.type + ').'));
               return;
@@ -552,27 +549,121 @@
       });
     }
 
-    async function encodeSmart(file, bitmap){
-      // PNG/نصوص: جرب 1.0 ثم 0.92 واختر الأصغر إذا الفرق واضح
-      // JPG: جرب 0.92 ثم 0.86 واختر الأصغر إذا الفرق واضح
-      var pngLike = isPngLike(file);
-
-      var q1 = pngLike ? 1.0 : 0.92;
-      var q2 = pngLike ? 0.92 : 0.86;
-
-      // 1) التحويل الأساسي
-      var b1 = await bitmapToWebPBlob(bitmap, q1);
-
-      // 2) تحويل ضغط أعلى
-      var b2 = await bitmapToWebPBlob(bitmap, q2);
-
-      // اختيار الأصغر، لكن بدون “هبوط قوي”:
-      // - إذا b2 أصغر بنسبة أقل من 8%، نثبت على b1 (للحفاظ على الجودة)
-      var savePct = pctSaved(b1.size, b2.size);
-      if(savePct >= 8 && b2.size < b1.size){
-        return { blob: b2, chosen: 'Canvas WebP q=' + q2.toFixed(2) };
+    function drawSourceToCanvasScaled(source, tw, th){
+      var c = document.createElement('canvas');
+      c.width = tw; c.height = th;
+      var ctx = c.getContext('2d', { willReadFrequently:true });
+      if(source.__canvas){
+        ctx.drawImage(source.__canvas, 0, 0, tw, th);
+      }else{
+        ctx.drawImage(source, 0, 0, tw, th);
       }
-      return { blob: b1, chosen: 'Canvas WebP q=' + q1.toFixed(2) };
+      return { canvas: c, ctx: ctx };
+    }
+
+    function getCompareSize(w, h){
+      var maxSide = Math.max(w, h);
+      if(maxSide <= CMP_MAX) return { cw:w, ch:h };
+      var scale = CMP_MAX / maxSide;
+      return { cw: Math.max(1, Math.round(w*scale)), ch: Math.max(1, Math.round(h*scale)) };
+    }
+
+    function calcDiff(a, b){
+      // a,b: Uint8ClampedArray RGBA
+      var len = Math.min(a.length, b.length);
+      var sum = 0;
+      var count = 0;
+      var maxD = 0;
+
+      // SAMPLE_STEP = 2 => نأخذ نصف البكسلات تقريبًا
+      // نخليها على مؤشر البكسل (كل بكسل = 4 قيم)
+      var stridePx = SAMPLE_STEP;
+      var stride = stridePx * 4;
+
+      for(var i=0; i<len; i+=stride){
+        var dr = Math.abs(a[i]   - b[i]);
+        var dg = Math.abs(a[i+1] - b[i+1]);
+        var db = Math.abs(a[i+2] - b[i+2]);
+        // تجاهل الألفا لتجنب فروقات pre-multiply
+        var d = dr + dg + db;
+        sum += d;
+        count += 3;
+
+        if(dr>maxD) maxD = dr;
+        if(dg>maxD) maxD = dg;
+        if(db>maxD) maxD = db;
+      }
+      var mean = count ? (sum / count) : 0;
+      return { mean: mean, max: maxD };
+    }
+
+    async function blobToBitmap(blob){
+      if('createImageBitmap' in window){
+        try{ return await createImageBitmap(blob); }catch(_){}
+      }
+      var url = URL.createObjectURL(blob);
+      try{
+        var img = new Image();
+        img.decoding = 'async';
+        await new Promise(function(res, rej){
+          img.onload = function(){ res(); };
+          img.onerror = function(){ rej(new Error('تعذر قراءة نتيجة التحويل')); };
+          img.src = url;
+        });
+        var c = document.createElement('canvas');
+        c.width = img.naturalWidth || img.width;
+        c.height = img.naturalHeight || img.height;
+        var ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        return { __canvas: c, width: c.width, height: c.height };
+      } finally {
+        try{ URL.revokeObjectURL(url); }catch(_){}
+      }
+    }
+
+    async function isVisuallySafe(originalBitmap, candidateBlob){
+      // 1) decode candidate
+      var candBmp = await blobToBitmap(candidateBlob);
+
+      var ow = originalBitmap.width || (originalBitmap.__canvas && originalBitmap.__canvas.width) || 0;
+      var oh = originalBitmap.height || (originalBitmap.__canvas && originalBitmap.__canvas.height) || 0;
+      if(!ow || !oh) return false;
+
+      // 2) scale both to compare size
+      var sz = getCompareSize(ow, oh);
+      var oCanvas = drawSourceToCanvasScaled(originalBitmap, sz.cw, sz.ch);
+      var cCanvas = drawSourceToCanvasScaled(candBmp, sz.cw, sz.ch);
+
+      var oData = oCanvas.ctx.getImageData(0,0,sz.cw,sz.ch).data;
+      var cData = cCanvas.ctx.getImageData(0,0,sz.cw,sz.ch).data;
+
+      var d = calcDiff(oData, cData);
+      return (d.mean <= MEAN_THRESH) && (d.max <= MAX_THRESH);
+    }
+
+    async function encodeSmartSafe(file, bitmap){
+      // ✅ Base: q=1.00 (جودة 100%)
+      var baseBlob = await bitmapToWebPBlob(bitmap, BASE_Q);
+      var best = { blob: baseBlob, chosen: 'Canvas WebP q=1.00 (Base)' };
+
+      // جرّب ضغط أعلى فقط إذا فيه توفير + بدون فرق بصري
+      for(var i=0; i<TRY_QS.length; i++){
+        var q = TRY_QS[i];
+        var candBlob = await bitmapToWebPBlob(bitmap, q);
+
+        var saving = pctSaved(best.blob.size, candBlob.size);
+        if(saving < MIN_SAVING_PCT || candBlob.size >= best.blob.size){
+          continue;
+        }
+
+        var ok = await isVisuallySafe(bitmap, candBlob);
+        if(ok){
+          best = { blob: candBlob, chosen: 'Smart Safe q=' + q.toFixed(2) };
+          // نكمل نحاول أصغر إذا موجود
+        }
+      }
+
+      return best;
     }
 
     function renderResults(){
@@ -655,7 +746,7 @@
           var h = bmp.height || (bmp.__canvas && bmp.__canvas.height) || 0;
 
           updateProgress(i, 55, 'تحويل');
-          var enc = await encodeSmart(file, bmp);
+          var enc = await encodeSmartSafe(file, bmp);
 
           updateProgress(i, 85, 'تجهيز');
           var outName = (file.name || 'image').replace(/\.(png|jpg|jpeg|gif|bmp|webp|tiff|tif)$/i,'') + '.webp';
