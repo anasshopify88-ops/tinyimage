@@ -35,7 +35,7 @@
   }
   .btn:hover{transform:translateY(-2px); border-color:#cbd5e1}
   .btn.home{background:#000; color:#fff; border-color:#000}
-  .btn:disabled{opacity:.6; cursor:not-allowed}
+  
   .btn.contactTop{
     background: var(--accent);
     border-color: var(--accent);
@@ -51,146 +51,55 @@
   .logo{width:100%; max-width:180px; align-self:center; object-fit:contain; object-position:center; background:#fff; border-radius:12px; border:1px solid var(--border); padding:8px}
   .title-logo{width:180px; max-width:180px; align-self:center}
 
+  /* التخطيط العام */
   .layout{
     display:grid;
-    grid-template-columns: var(--sidebar-w) minmax(0,1fr) minmax(0,1fr);
-    grid-template-areas: "side uploads results";
+    grid-template-columns: var(--sidebar-w) 1fr; /* عمودين فقط الآن */
     gap:14px;
-    align-items:stretch;
+    align-items:stretch; /* يضمن تساوي الارتفاع */
     margin-top:12px;
   }
 
-  #sidePanel{grid-area:side}
-  #uploadsCard{grid-area:uploads}
-  #resultsCard{grid-area:results}
-
-  #sidePanel{display:flex; overflow:visible;}
-  .sidebar-card{
-    flex:1 1 auto;
-    display:flex; flex-direction:column; gap:10px;
-    height:100%;
+  /* السايدبار - تم تعديله ليظهر كاملاً */
+  #sidePanel{
+    display:block; 
+    height:auto; 
+    min-height:0; 
     overflow:visible;
-    min-height:0;
+  }
+  
+  .sidebar-card{
+    height:100%; 
+    display:flex; flex-direction:column; gap:10px; 
+    overflow:visible;
   }
 
   .avatar{width:112px;height:112px;border-radius:50%;background:#fff;padding:6px;object-fit:contain;object-position:center;border:1px solid var(--border);align-self:center}
   .s-list{display:grid; gap:8px}
-  .s-item a{
+  .s-item a, .s-text{
     display:block; padding:8px 10px; border:1px solid var(--border); border-radius:12px; background:#fff;
     color:#0f172a; text-decoration:none; font-weight:600; transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
     box-shadow:0 4px 12px rgba(15,23,42,.05); font-size:13px;
   }
   .s-item a:hover{transform:translateY(-2px); border-color:#cbd5e1; box-shadow:0 8px 18px rgba(15,23,42,.08)}
-  .s-text{
-    display:block; padding:8px 10px; border:1px solid var(--border); border-radius:12px; background:#fff;
-    color:#0f172a; font-weight:600; box-shadow:0 4px 12px rgba(15,23,42,.05); font-size:13px;
-  }
 
-  .card.section{padding:16px; height:100%; min-height:0;}
-  .label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:14px}
-  .hint{font-size:12px;color:var(--muted)}
+  /* يمين: منطقة الرسالة */
+  #toolBox{display:block; height: 100%; min-height:0}
 
-  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-  button{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer}
-  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  button.loading{opacity:.7;pointer-events:none}
-  button.danger{background:#fff;border-color:#fecaca;color:#b91c1c}
-  button.danger:hover{border-color:#fca5a5}
-
-  .status{font-size:12px;margin-top:8px;display:flex;align-items:center;gap:8px}
-  .status.ok{color:var(--ok)} .status.warn{color:var(--warn)} .status.bad{color:var(--error)}
-  .status.hidden{display:none}
-  .err{margin-top:8px;font-size:12px;color:var(--error)}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;color:var(--muted);font-weight:800}
-
-  .drop{
-    border:1.5px dashed #cbd5e1;
-    background:linear-gradient(180deg,#fff,#f9fbff);
-    border-radius:14px;
-    padding:14px;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    justify-content:space-between;
-    transition:transform .18s ease, box-shadow .25s ease, border-color .25s ease;
-    cursor:pointer;
-    user-select:none;
-  }
-  .drop.drag{border-color:var(--accent); box-shadow:0 0 0 4px rgba(37,99,235,.12)}
-  .drop strong{font-size:13px}
-  .drop .mini{font-size:12px;color:var(--muted)}
-
-  .list{display:grid; gap:10px}
-  .item{
-    border:1px solid var(--border); border-radius:14px; background:#fff;
-    padding:10px; display:grid; gap:10px;
-    box-shadow:0 4px 12px rgba(15,23,42,.05);
-  }
-  .itemTop{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
-  .name{font-weight:900}
-  .meta{color:var(--muted); font-size:12px; font-weight:800}
-  .grid2{display:grid; grid-template-columns: 84px 1fr; gap:10px; align-items:center}
-  .thumb{
-    width:84px; height:84px; border-radius:12px; border:1px solid var(--border);
-    background:#fff; object-fit:contain; object-position:center;
-  }
-
-  /* ✅ شريط تقدم واضح */
-  .bar{height:10px; border-radius:999px; background:#eef2ff; border:1px solid var(--border); overflow:hidden}
-  .bar > i{
-    display:block; height:100%; width:0%;
-    background:var(--accent);
-    transition:width .2s ease;
-  }
-
-  .kpis{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
-  .smallLink{
-    border:1px solid var(--border); background:#fff; border-radius:12px; padding:8px 10px;
-    text-decoration:none; font-weight:900; font-size:12px; display:inline-flex; gap:6px; align-items:center;
-    box-shadow:0 4px 12px rgba(15,23,42,.05); color:#0f172a;
-    transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
-  }
-  .smallLink:hover{transform:translateY(-2px); border-color:#cbd5e1; box-shadow:0 8px 18px rgba(15,23,42,.08)}
-  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--error)}
-
-  .visually-hidden-file{
-    position:absolute !important;
-    width:1px !important;
-    height:1px !important;
-    padding:0 !important;
-    margin:-1px !important;
-    overflow:hidden !important;
-    clip:rect(0,0,0,0) !important;
-    white-space:nowrap !important;
-    border:0 !important;
-    opacity:0 !important;
-    pointer-events:none !important;
-  }
+  /* زر الانتقال الكبير */
+  a.btn.primary {background:var(--accent);border-color:var(--accent);color:#fff}
 
   @media (max-width:980px){
-    .layout{
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "uploads"
-        "results"
-        "side";
-      align-items:stretch;
-    }
+    .layout{grid-template-columns:1fr}
     .avatar{width:104px;height:104px}
-    .card.section{height:auto}
-    .sidebar-card{height:auto}
-    #sidePanel{display:block}
   }
-
-  #modeInfo{display:none !important;}
 </style>
 </head>
 
 <body>
   <div class="wrap" id="app">
     <div class="topbar">
-      <button class="btn" id="backBtn" type="button">رجوع</button>
+      <button class="btn" id="backBtn" onclick="history.back()">رجوع</button>
       <a class="btn home" id="homeBtn" href="https://anasrashed.com" rel="noopener">الرئيسية</a>
       <a class="btn contactTop" id="contactTopBtn" href="https://contact.anasrashed.com" target="_blank" rel="noopener">تواصل معي</a>
     </div>
@@ -229,608 +138,36 @@
 
             <div class="sub" style="text-align:center; font-size:18px; margin-top:10px;"><b>أدوات سيو احترافية</b></div>
             <div class="s-item"><a href="https://serp.anasrashed.com" target="_blank" rel="noopener">أداة SERP بالذكاء الإصطناعي</a></div>
-            <div class="s-item"><a href="https://writer.anasrashed.com" target="_blank" rel="noopener">أداة كتابة المقالات بالذكاء الإصطناعي</a></div>
+            <div class="s-item"><a href="https://writer.anasrashed.com" target="_blank" rel="noopener">أداة كتابة مقالات بالذكاء الإصطناعي</a></div>
             <div class="s-item"><a href="https://smg.anasrashed.com" target="_blank" rel="noopener">أداة منشئ خريطة الموقع</a></div>
             <div class="s-item"><a href="https://keywords.anasrashed.com" target="_blank" rel="noopener">أداة الكلمات المفتاحية</a></div>
             <div class="s-item"><a href="https://checker.anasrashed.com" target="_blank" rel="noopener">أداة فحص الموقع</a></div>
 
-            <!-- ✅ إضافة جديدة -->
-            <div class="s-item"><a href="https://tinyimage.anasrashed.com" target="_blank" rel="noopener">أداة تحويل الصور الى WebP</a></div>
+            <!-- ✅ إضافة الأداة للقائمة -->
+            <div class="s-item"><a href="https://tinyimage.anasrashed.com" target="_blank" rel="noopener">تحويل الصور الى WebP</a></div>
           </div>
         </div>
       </aside>
 
-      <!-- رفع الصور (وسط) -->
-      <section class="card section" id="uploadsCard">
-        <div class="label">رفع الصور</div>
+      <!-- رسالة الانتقال -->
+      <section id="toolBox">
+        <div class="card" style="text-align:center; padding:60px 20px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:24px; min-height:400px; height:100%;">
+            
+            <div style="font-size:48px;">🚀</div>
 
-        <label class="drop" id="dropZone" for="fileInput" aria-label="منطقة رفع الصور" tabindex="0">
-          <div>
-            <strong>اسحب الصور هنا</strong>
-            <div class="mini">أو اضغط هنا/على زر "اختيار ملفات".</div>
-          </div>
-          <div class="btns" style="margin:0">
-            <button class="primary" id="pickBtn" type="button">اختيار ملفات</button>
-          </div>
-        </label>
+            <h2 style="margin:0; font-size:clamp(20px, 4vw, 28px); color:var(--text); line-height:1.4;">
+                تم الإنتقال الى منصة أدوات أنس راشد
+            </h2>
+            
+            <a href="https://tools.anasrashed.com" class="btn primary" style="font-size:16px; padding:12px 24px; text-decoration:none; display:inline-block;">
+                انتقل الى المنصة
+            </a>
 
-        <input id="fileInput" class="visually-hidden-file" type="file" accept="image/*" multiple>
-
-        <div class="chips">
-          <span class="chip" id="qualityChip">Smart Safe: Base 100% (q=1.00) + Try q=0.92/0.88 إذا بدون فرق بصري</span>
-          <span class="chip" id="countChip">0 ملفات</span>
-        </div>
-
-        <div class="btns" style="margin-top:12px">
-          <button class="primary" id="convertBtn" type="button" disabled>تحويل إلى WebP</button>
-          <button id="zipBtn" type="button" disabled>تحميل الكل (ZIP)</button>
-          <button class="danger" id="clearBtn" type="button">مسح</button>
-        </div>
-
-        <div id="status" class="status hidden"></div>
-        <div id="err" class="err" hidden></div>
-      </section>
-
-      <!-- النتائج (يسار) -->
-      <section class="card section" id="resultsCard">
-        <div class="label">
-          <span>النتائج</span>
-          <span class="hint" id="summaryHint">—</span>
-        </div>
-
-        <div id="outList" class="list" style="margin-top:10px">
-          <div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>
         </div>
       </section>
 
     </div>
   </div>
-
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-
-<script>
-(function(){
-  function on(el, ev, fn, opts){
-    if(!el) return;
-    try{ el.addEventListener(ev, fn, opts); }
-    catch(_){ el.addEventListener(ev, fn, !!opts); }
-  }
-  function supportsPassive(){
-    var ok = false;
-    try{
-      var opts = Object.defineProperty({}, 'passive', { get: function(){ ok = true; }});
-      window.addEventListener('testPassive', null, opts);
-      window.removeEventListener('testPassive', null, opts);
-    }catch(e){}
-    return ok;
-  }
-  var passiveOK = supportsPassive();
-  var nonPassive = passiveOK ? { passive:false } : false;
-
-  function init(){
-    var $ = function(s){ return document.querySelector(s); };
-
-    var dropZone    = $('#dropZone');
-    var fileInput   = $('#fileInput');
-    var pickBtn     = $('#pickBtn');
-    var convertBtn  = $('#convertBtn');
-    var zipBtn      = $('#zipBtn');
-    var clearBtn    = $('#clearBtn');
-
-    var outList     = $('#outList');
-    var statusEl    = $('#status');
-    var errEl       = $('#err');
-    var countChip   = $('#countChip');
-    var summaryHint = $('#summaryHint');
-    var backBtn     = $('#backBtn');
-
-    var queue = [];
-    var results = [];
-
-    // Smart Safe knobs (تقدر تغيّرها لو حبيت)
-    var BASE_Q = 1.0;                 // جودة 100% أساس
-    var TRY_QS = [0.92, 0.88];         // محاولات ضغط أعلى
-    var MIN_SAVING_PCT = 8;            // لازم توفير فعلي على الأقل
-    var CMP_MAX = 256;                 // أقصى حجم لفحص البكسلات (للسرعة)
-    var SAMPLE_STEP = 2;               // كل كم بكسل نعمل عينة
-    var MEAN_THRESH = 1.75;            // متوسط فرق الألوان المسموح (0-255)
-    var MAX_THRESH  = 20;              // أقصى فرق مسموح في أي قناة
-
-    if(backBtn) on(backBtn,'click', function(){ history.back(); });
-
-    function setStatus(kind, msg){
-      statusEl.className = 'status ' + (kind||'') + (msg ? '' : ' hidden');
-      statusEl.textContent = msg || '';
-    }
-    function showErr(msg){
-      errEl.hidden = false;
-      errEl.textContent = msg;
-    }
-    function clearErr(){
-      errEl.hidden = true;
-      errEl.textContent = '';
-    }
-
-    function fmtBytes(n){
-      var u = ['B','KB','MB','GB'];
-      var i = 0, x = n;
-      while(x >= 1024 && i < u.length-1){ x/=1024; i++; }
-      return (x.toFixed(i?1:0) + ' ' + u[i]);
-    }
-    function pctSaved(inB, outB){
-      if(!inB) return 0;
-      return Math.round(((inB - outB) / inB) * 100);
-    }
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, function(m){
-        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
-      });
-    }
-
-    function revokeAll(){
-      for(var i=0;i<results.length;i++){
-        var r = results[i];
-        try{ URL.revokeObjectURL(r.url); }catch(e){}
-        try{ URL.revokeObjectURL(r.thumbUrl); }catch(e){}
-      }
-    }
-
-    function resetAll(){
-      revokeAll();
-      results = [];
-      queue = [];
-      outList.innerHTML = '<div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>';
-      convertBtn.disabled = true;
-      zipBtn.disabled = true;
-      countChip.textContent = '0 ملفات';
-      summaryHint.textContent = '—';
-      setStatus('', '');
-      clearErr();
-      fileInput.value = '';
-    }
-    on(clearBtn,'click', resetAll);
-
-    function isSupportedImage(file){
-      var t = (file.type || '').toLowerCase();
-      if(t === 'image/svg+xml') return false;
-      if(t.indexOf('image/') === 0) return true;
-      var name = (file.name || '').toLowerCase();
-      return (/\.(png|jpe?g|gif|bmp|webp|tiff|tif)$/i.test(name));
-    }
-
-    function addFiles(files){
-      clearErr(); setStatus('', '');
-      var arr = Array.prototype.slice.call(files || []).filter(isSupportedImage);
-      if(!arr.length){
-        setStatus('warn','اختر صور فقط (PNG/JPG/GIF/BMP/WebP).');
-        return;
-      }
-      queue = queue.concat(arr);
-      countChip.textContent = (queue.length + ' ملفات');
-      convertBtn.disabled = (queue.length === 0);
-      renderPending();
-    }
-
-    function renderPending(){
-      if(!queue.length){
-        outList.innerHTML = '<div class="hint">جاهز… ارفع صورك واضغط "تحويل".</div>';
-        summaryHint.textContent = '—';
-        return;
-      }
-      summaryHint.textContent = ('جاهز للتحويل: ' + queue.length + ' صورة');
-      outList.innerHTML = queue.map(function(f){
-        return (
-          '<div class="item">' +
-            '<div class="itemTop">' +
-              '<div>' +
-                '<div class="name">' + escapeHtml(f.name) + '</div>' +
-                '<div class="meta">الحجم الأصلي: ' + fmtBytes(f.size) + ' — النوع: ' + escapeHtml(f.type || '—') + '</div>' +
-              '</div>' +
-              '<div class="kpis"><span class="chip">بانتظار التحويل</span></div>' +
-            '</div>' +
-            '<div class="bar"><i style="width:0%"></i></div>' +
-          '</div>'
-        );
-      }).join('');
-    }
-
-    on(pickBtn,'click', function(e){
-      e.preventDefault();
-      try{ fileInput.click(); }catch(_){}
-    });
-    on(fileInput,'change', function(e){ addFiles(e.target.files); });
-
-    ['dragover','drop'].forEach(function(ev){
-      on(window, ev, function(e){ e.preventDefault(); }, nonPassive);
-    });
-    ['dragenter','dragover'].forEach(function(ev){
-      on(dropZone, ev, function(e){
-        e.preventDefault(); e.stopPropagation();
-        dropZone.classList.add('drag');
-      }, nonPassive);
-    });
-    ['dragleave','drop'].forEach(function(ev){
-      on(dropZone, ev, function(e){
-        e.preventDefault(); e.stopPropagation();
-        dropZone.classList.remove('drag');
-      }, nonPassive);
-    });
-    on(dropZone, 'drop', function(e){
-      var dt = e.dataTransfer;
-      if(dt && dt.files) addFiles(dt.files);
-    }, nonPassive);
-
-    function setUIBusy(isBusy){
-      convertBtn.disabled = isBusy || queue.length === 0;
-      pickBtn.disabled = isBusy;
-      clearBtn.disabled = isBusy;
-      zipBtn.disabled = isBusy || results.length === 0;
-
-      if(isBusy){
-        convertBtn.classList.add('loading');
-        convertBtn.textContent = '... جاري التحويل';
-      }else{
-        convertBtn.classList.remove('loading');
-        convertBtn.textContent = 'تحويل إلى WebP';
-      }
-    }
-
-    function updateProgress(idx, pct, label){
-      var item = outList.children[idx];
-      if(!item) return;
-      var bar = item.querySelector('.bar > i');
-      if(bar) bar.style.width = (pct + '%');
-      var kpis = item.querySelector('.kpis');
-      if(kpis){
-        var text = (pct + '%') + (label ? (' — ' + label) : '');
-        kpis.innerHTML = '<span class="chip">' + escapeHtml(text) + '</span>';
-      }
-    }
-
-    async function fileToBitmap(file){
-      if('createImageBitmap' in window){
-        try{ return await createImageBitmap(file, { imageOrientation: "from-image" }); }catch(_){}
-      }
-      var url = URL.createObjectURL(file);
-      try{
-        var img = new Image();
-        img.decoding = 'async';
-        await new Promise(function(res, rej){
-          img.onload = function(){ res(); };
-          img.onerror = function(){ rej(new Error('تعذر قراءة الصورة')); };
-          img.src = url;
-        });
-        var c = document.createElement('canvas');
-        c.width = img.naturalWidth || img.width;
-        c.height = img.naturalHeight || img.height;
-        var ctx = c.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        if('createImageBitmap' in window){
-          return await createImageBitmap(c);
-        }
-        return { __canvas: c, width: c.width, height: c.height };
-      } finally {
-        try{ URL.revokeObjectURL(url); }catch(_){}
-      }
-    }
-
-    function bitmapToWebPBlob(bitmap, quality){
-      return new Promise(function(resolve, reject){
-        try{
-          var canvas = document.createElement('canvas');
-          var w = bitmap.width || (bitmap.__canvas && bitmap.__canvas.width) || 0;
-          var h = bitmap.height || (bitmap.__canvas && bitmap.__canvas.height) || 0;
-          if(!w || !h){ reject(new Error('أبعاد الصورة غير صالحة')); return; }
-
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-
-          if(bitmap.__canvas){
-            ctx.drawImage(bitmap.__canvas, 0, 0);
-          }else{
-            ctx.drawImage(bitmap, 0, 0);
-          }
-
-          if(!canvas.toBlob){
-            reject(new Error('متصفحك لا يدعم toBlob.'));
-            return;
-          }
-
-          canvas.toBlob(function(blob){
-            if(!blob) { reject(new Error('فشل إنشاء الملف.')); return; }
-            if(blob.type !== 'image/webp'){
-              reject(new Error('متصفحك لا يدعم WebP (canvas رجّع: ' + blob.type + ').'));
-              return;
-            }
-            resolve(blob);
-          }, 'image/webp', quality);
-        }catch(e){ reject(e); }
-      });
-    }
-
-    function drawSourceToCanvasScaled(source, tw, th){
-      var c = document.createElement('canvas');
-      c.width = tw; c.height = th;
-      var ctx = c.getContext('2d', { willReadFrequently:true });
-      if(source.__canvas){
-        ctx.drawImage(source.__canvas, 0, 0, tw, th);
-      }else{
-        ctx.drawImage(source, 0, 0, tw, th);
-      }
-      return { canvas: c, ctx: ctx };
-    }
-
-    function getCompareSize(w, h){
-      var maxSide = Math.max(w, h);
-      if(maxSide <= CMP_MAX) return { cw:w, ch:h };
-      var scale = CMP_MAX / maxSide;
-      return { cw: Math.max(1, Math.round(w*scale)), ch: Math.max(1, Math.round(h*scale)) };
-    }
-
-    function calcDiff(a, b){
-      // a,b: Uint8ClampedArray RGBA
-      var len = Math.min(a.length, b.length);
-      var sum = 0;
-      var count = 0;
-      var maxD = 0;
-
-      // SAMPLE_STEP = 2 => نأخذ نصف البكسلات تقريبًا
-      // نخليها على مؤشر البكسل (كل بكسل = 4 قيم)
-      var stridePx = SAMPLE_STEP;
-      var stride = stridePx * 4;
-
-      for(var i=0; i<len; i+=stride){
-        var dr = Math.abs(a[i]   - b[i]);
-        var dg = Math.abs(a[i+1] - b[i+1]);
-        var db = Math.abs(a[i+2] - b[i+2]);
-        // تجاهل الألفا لتجنب فروقات pre-multiply
-        var d = dr + dg + db;
-        sum += d;
-        count += 3;
-
-        if(dr>maxD) maxD = dr;
-        if(dg>maxD) maxD = dg;
-        if(db>maxD) maxD = db;
-      }
-      var mean = count ? (sum / count) : 0;
-      return { mean: mean, max: maxD };
-    }
-
-    async function blobToBitmap(blob){
-      if('createImageBitmap' in window){
-        try{ return await createImageBitmap(blob); }catch(_){}
-      }
-      var url = URL.createObjectURL(blob);
-      try{
-        var img = new Image();
-        img.decoding = 'async';
-        await new Promise(function(res, rej){
-          img.onload = function(){ res(); };
-          img.onerror = function(){ rej(new Error('تعذر قراءة نتيجة التحويل')); };
-          img.src = url;
-        });
-        var c = document.createElement('canvas');
-        c.width = img.naturalWidth || img.width;
-        c.height = img.naturalHeight || img.height;
-        var ctx = c.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        return { __canvas: c, width: c.width, height: c.height };
-      } finally {
-        try{ URL.revokeObjectURL(url); }catch(_){}
-      }
-    }
-
-    async function isVisuallySafe(originalBitmap, candidateBlob){
-      // 1) decode candidate
-      var candBmp = await blobToBitmap(candidateBlob);
-
-      var ow = originalBitmap.width || (originalBitmap.__canvas && originalBitmap.__canvas.width) || 0;
-      var oh = originalBitmap.height || (originalBitmap.__canvas && originalBitmap.__canvas.height) || 0;
-      if(!ow || !oh) return false;
-
-      // 2) scale both to compare size
-      var sz = getCompareSize(ow, oh);
-      var oCanvas = drawSourceToCanvasScaled(originalBitmap, sz.cw, sz.ch);
-      var cCanvas = drawSourceToCanvasScaled(candBmp, sz.cw, sz.ch);
-
-      var oData = oCanvas.ctx.getImageData(0,0,sz.cw,sz.ch).data;
-      var cData = cCanvas.ctx.getImageData(0,0,sz.cw,sz.ch).data;
-
-      var d = calcDiff(oData, cData);
-      return (d.mean <= MEAN_THRESH) && (d.max <= MAX_THRESH);
-    }
-
-    async function encodeSmartSafe(file, bitmap){
-      // ✅ Base: q=1.00 (جودة 100%)
-      var baseBlob = await bitmapToWebPBlob(bitmap, BASE_Q);
-      var best = { blob: baseBlob, chosen: 'Canvas WebP q=1.00 (Base)' };
-
-      // جرّب ضغط أعلى فقط إذا فيه توفير + بدون فرق بصري
-      for(var i=0; i<TRY_QS.length; i++){
-        var q = TRY_QS[i];
-        var candBlob = await bitmapToWebPBlob(bitmap, q);
-
-        var saving = pctSaved(best.blob.size, candBlob.size);
-        if(saving < MIN_SAVING_PCT || candBlob.size >= best.blob.size){
-          continue;
-        }
-
-        var ok = await isVisuallySafe(bitmap, candBlob);
-        if(ok){
-          best = { blob: candBlob, chosen: 'Smart Safe q=' + q.toFixed(2) };
-          // نكمل نحاول أصغر إذا موجود
-        }
-      }
-
-      return best;
-    }
-
-    function renderResults(){
-      if(!results.length){
-        outList.innerHTML = '<div class="hint">لا توجد نتائج بعد.</div>';
-        summaryHint.textContent = '—';
-        return;
-      }
-
-      var totalIn  = results.reduce(function(a,r){ return a + r.inSize; }, 0);
-      var totalOut = results.reduce(function(a,r){ return a + r.outSize; }, 0);
-      var totalPct = pctSaved(totalIn, totalOut);
-
-      summaryHint.innerHTML = 'الإجمالي: ' + fmtBytes(totalIn) + ' → ' + fmtBytes(totalOut) + ' (توفير <b>' + totalPct + '%</b>)';
-      zipBtn.disabled = false;
-
-      outList.innerHTML = results.map(function(r){
-        var cls = (r.savedPct>=25?'ok':(r.savedPct>=5?'warn':'')); 
-        return (
-          '<div class="item">' +
-            '<div class="itemTop">' +
-              '<div>' +
-                '<div class="name">' + escapeHtml(r.name) + '</div>' +
-                '<div class="meta">' +
-                  r.w + '×' + r.h + ' — ' + escapeHtml(r.modeChosen) + ' — ' +
-                  fmtBytes(r.inSize) + ' → ' + fmtBytes(r.outSize) +
-                  ' <span class="'+ cls +'"> (توفير ' + r.savedPct + '%)</span>' +
-                '</div>' +
-              '</div>' +
-              '<div class="kpis">' +
-                '<a class="smallLink" download="' + escapeHtml(r.name) + '" href="' + r.url + '">تحميل WebP</a>' +
-                '<span class="chip">' + fmtBytes(r.outSize) + '</span>' +
-              '</div>' +
-            '</div>' +
-            '<div class="grid2">' +
-              '<img class="thumb" src="' + r.thumbUrl + '" alt="">' +
-              '<div>' +
-                '<div class="bar"><i style="width:100%"></i></div>' +
-                '<div class="hint" style="margin-top:8px">تم التحويل محليًا داخل المتصفح.</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>'
-        );
-      }).join('');
-    }
-
-    async function convertAll(){
-      clearErr();
-      setStatus('', '');
-      if(!queue.length){ setStatus('warn','ارفع صور أولاً.'); return; }
-
-      setUIBusy(true);
-      setStatus('warn','جاري التحويل…');
-
-      try{
-        outList.innerHTML = queue.map(function(f){
-          return (
-            '<div class="item">' +
-              '<div class="itemTop">' +
-                '<div>' +
-                  '<div class="name">' + escapeHtml(f.name) + '</div>' +
-                  '<div class="meta">الحجم الأصلي: ' + fmtBytes(f.size) + ' — ' + escapeHtml(f.type || '—') + '</div>' +
-                '</div>' +
-                '<div class="kpis"><span class="chip">0%</span></div>' +
-              '</div>' +
-              '<div class="bar"><i style="width:0%"></i></div>' +
-            '</div>'
-          );
-        }).join('');
-
-        results = [];
-
-        for(var i=0; i<queue.length; i++){
-          var file = queue[i];
-
-          updateProgress(i, 10, 'قراءة');
-          var bmp = await fileToBitmap(file);
-
-          var w = bmp.width || (bmp.__canvas && bmp.__canvas.width) || 0;
-          var h = bmp.height || (bmp.__canvas && bmp.__canvas.height) || 0;
-
-          updateProgress(i, 55, 'تحويل');
-          var enc = await encodeSmartSafe(file, bmp);
-
-          updateProgress(i, 85, 'تجهيز');
-          var outName = (file.name || 'image').replace(/\.(png|jpg|jpeg|gif|bmp|webp|tiff|tif)$/i,'') + '.webp';
-          var url = URL.createObjectURL(enc.blob);
-          var thumbUrl = URL.createObjectURL(file);
-
-          var saved = pctSaved(file.size, enc.blob.size);
-
-          results.push({
-            name: outName,
-            inSize: file.size,
-            outSize: enc.blob.size,
-            savedPct: saved,
-            blob: enc.blob,
-            url: url,
-            modeChosen: enc.chosen,
-            w: w,
-            h: h,
-            thumbUrl: thumbUrl
-          });
-
-          updateProgress(i, 100, 'تم');
-        }
-
-        queue = [];
-        countChip.textContent = '0 ملفات';
-        convertBtn.disabled = true;
-
-        renderResults();
-        setStatus('ok','تم التحويل بنجاح.');
-      }catch(e){
-        setStatus('bad','فشل التحويل.');
-        showErr('خطأ: ' + String(e && e.message ? e.message : e));
-      }finally{
-        setUIBusy(false);
-      }
-    }
-
-    on(convertBtn,'click', function(){ convertAll(); });
-
-    on(zipBtn,'click', async function(){
-      clearErr(); setStatus('', '');
-      if(!results.length) return;
-
-      try{
-        setUIBusy(true);
-        setStatus('warn','جاري تجهيز ZIP…');
-
-        var zip = new JSZip();
-        var folder = zip.folder('webp');
-        results.forEach(function(r){
-          folder.file(r.name, r.blob);
-        });
-
-        var zipBlob = await zip.generateAsync({ type:'blob' });
-        var zipUrl = URL.createObjectURL(zipBlob);
-
-        var a = document.createElement('a');
-        a.href = zipUrl;
-        a.download = 'webp-images.zip';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        setTimeout(function(){ try{ URL.revokeObjectURL(zipUrl); }catch(e){} }, 3000);
-        setStatus('ok','تم تحميل ZIP.');
-      }catch(e){
-        setStatus('bad','تعذر إنشاء ZIP.');
-        showErr('خطأ: ' + String(e && e.message ? e.message : e));
-      }finally{
-        setUIBusy(false);
-      }
-    });
-
-    resetAll();
-  }
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  }else{
-    init();
-  }
-})();
-</script>
 
 </body>
 </html>
